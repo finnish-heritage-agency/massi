@@ -1,0 +1,86 @@
+.scrollable{
+    overflow-y: scroll; 
+    height: 400px;
+}
+.text-right{
+     text-align: right;
+     float: right;
+ }
+ 
+ .border{
+     border: 1px solid black;
+ }
+ 
+ .pointer {
+    cursor: pointer;
+}
+/* collection row progress */
+table .progress-9{
+    padding:140px;
+}
+
+.error_red{
+    color:red;
+    font-weight: bold;
+}
+.disabled{
+    color:red;
+}
+.success{
+    color:green;
+}
+.hidden{
+    display:none; 
+}
+
+.phase_bar{
+    top: 0;
+    text-transform:uppercase;
+}
+
+table .barcode_space{
+    padding-top:40px;
+    padding-bottom:40px;
+}
+table .with_button{
+    width:15%;
+}
+
+table{
+    width: 100%;
+}
+.link-padding{
+    padding-left: 20px;
+}
+.two_rows{
+    height: 50px;
+}
+.swal-wide{
+    width:850px !important;
+}
+.bread_title{
+    color:black;
+    padding-left: 50px;
+}
+
+body{
+    color: black;
+    font-weight: 600;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #e3e6f0;
+  position: sticky; 
+  top: 0;
+  background-color: white;
+}
+
+#one_job {
+  overflow-y: auto; 
+  height: 500px;
+}
+
+.btn .badge {
+  top: -1px;
+}
