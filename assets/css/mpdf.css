@@ -1,0 +1,30 @@
+body, html, .container-fluid{
+    background-color: white;
+}
+#navbar-nav, .navbar-nav, .navbar, .no_pdf{
+  display: none;
+}
+table.no_pdf {
+  display: none;
+}
+.container-fluid {
+    float:none;
+    margin:0px;
+    overflow:auto;
+    padding:0;
+    width:100%;
+}
+
+.table-bordered td{
+    text-align:center;
+    padding-top:60px;
+    padding-bottom:60px;
+}
+
+.card{
+    border: 0px;
+}
+
+.shadow{
+    box-shadow: none;
+}

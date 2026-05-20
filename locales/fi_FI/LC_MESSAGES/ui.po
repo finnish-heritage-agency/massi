@@ -1,0 +1,122 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2020-06-07 07:04+0200\n"
+"PO-Revision-Date: 2020-06-07 14:52+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language: fi_FI\n"
+
+msgid "cancel"
+msgstr "peruuta"
+
+msgid "barcodes"
+msgstr "viivakoodit"
+
+msgid "pending"
+msgstr "odottavat"
+
+msgid "new"
+msgstr "uusi"
+
+msgid "collection"
+msgstr "kokoelma"
+
+msgid "collections"
+msgstr "kokoelmat"
+
+msgid "logs"
+msgstr "lokit"
+
+msgid "frontpage"
+msgstr "etusivu"
+
+msgid "print"
+msgstr "tulosta"
+
+msgid "digitization batchs"
+msgstr "digitointierät"
+
+msgid "digitization batch"
+msgstr "digitointierä"
+
+msgid "default values"
+msgstr "oletusarvot"
+
+msgid "settings"
+msgstr "asetukset"
+
+msgid "add an artist"
+msgstr "lisää artisti"
+
+msgid "artist"
+msgstr "tekijä"
+
+msgid "artists"
+msgstr "tekijät"
+
+msgid "add a license"
+msgstr "lisää lisenssi"
+
+msgid "license"
+msgstr "lisenssi"
+
+msgid "licenses"
+msgstr "lisenssit"
+
+msgid "choose"
+msgstr "valitse"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "internal id"
+msgstr "sisäinen id"
+
+msgid "internal name"
+msgstr "sisäinen nimi"
+
+msgid "change status"
+msgstr "vaihda status"
+
+msgid "save"
+msgstr "tallenna"
+
+msgid "remove"
+msgstr "poista"
+
+msgid "legals"
+msgstr "oikeudet"
+
+msgid "legal"
+msgstr "oikeus"
+
+msgid "add a legal type"
+msgstr "lisää oikeuden tyyppi"
+
+msgid "add a legal"
+msgstr "lisää oikeus"
+
+msgid "handling"
+msgstr "käsittelyssä"
+
+msgid "all transfers"
+msgstr "kaikki siirrot"
+
+msgid "technical settings"
+msgstr "tekniset asetukset"
+
+msgid "technical logs"
+msgstr "tekniset lokit"
+
+msgid "add a new author"
+msgstr "lisää uusi tekijä"
+
+msgid "author"
+msgstr "tekijä"
