@@ -7,7 +7,7 @@ $data = array(
 );
 require_once '../settings.php';
 
-$barCode = callRest("POST", WEBROOT . "/rest/barCodeGenerator.php", $data);
+$barCode = callRest("POST", "/rest/barCodeGenerator.php", $data);
 $local_name = "/tmp/" . time() . '.jpg';
 file_put_contents($local_name, $barCode); //create image locall
 

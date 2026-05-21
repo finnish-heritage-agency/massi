@@ -12,7 +12,13 @@ if (file_exists(__DIR__ . "/../settings.php")) {
 } else {
     die(":/ \n");
 }
-$ok = callRest("POST", WEBROOT . "/rest/checkMplusAttempts.php", array("check" => 1), true);
+$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep' | wc -l");
+//$pids = shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep'");
+if ($pids > 1) {
+    die("maincron käynnissä");
+}
+
+$ok = callRest("POST", "/rest/checkMplusAttempts.php", array("check" => 1), true);
 
 if (file_exists(SOFTWARE_BREAK) || $ok != 1) {
     if (!file_exists(SOFTWARE_BREAK)) {
@@ -31,11 +37,6 @@ if ($x != ROOT_USER) {
     die("Väärä käyttäjä");
 }
 
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep' | wc -l");
-//$pids = shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep'");
-if ($pids > 1) {
-    die("maincron käynnissä");
-}
 /* Tarkistetaan PICTURE_FOLDER hakemisto
  * Tarkistetaan onko tietokannassa valmiita rivejä.
  * Jos löytyy, niin katsotaan löytyykö hakemistolle objektiId:tä M+ järjestelmästä
@@ -45,29 +46,29 @@ if ($pids > 1) {
  * Lajitellaan hakemistoa...
  */
 $x = shell_exec("php " . CRON_FOLDER . "sortTheDir.php");
-$x = writeLog($x, "cron-$date");
+$x = writeLog($x, "cron");
 
 $x = shell_exec("php " . CRON_FOLDER . "readCompleteFolders.php");
-$x = writeLog($x, "cron-$date");
+$x = writeLog($x, "cron");
 
 if (clockBetween() == 1) {
     echo "Ajetaan... ";
     $x = shell_exec("php " . CRON_FOLDER . "prosessingFolders.php");
-    $x = writeLog($x . "\n", "cron-$date");
+    $x = writeLog($x . "\n", "cron");
     echo "Prosessointi on valmis... ";
     $x = shell_exec("php " . CRON_FOLDER . "changeThumbnailBoo.php");
-    $x = writeLog($x . "\n", "cron-$date");
+    $x = writeLog($x . "\n", "cron");
     echo "Thumbit heitetty... ";
 }
 
-if (clockBetween("06:00", "06:05") == 1) {
+if (clockBetween("05:00", "05:05") == 1) {
     /* Poistetaan vanhat lokitiedostot */
     $x = shell_exec("php " . CRON_FOLDER . "removeOldLogs.php");
     //$x = writeLog($x . "\n", "cron-$date");
     if (REMOVE_READY_FOLDER == 1) {
         $x = shell_exec("php " . CRON_FOLDER . "movePicturesTo.php trash"); //Siivotaan pictures hakemisto
-        $x = writeLog($x . "\n", "PicturesToTrash-$date");
+        $x = writeLog($x . "\n", "PicturesToTrash");
         $x = shell_exec("php " . CRON_FOLDER . "movePicturesTo.php"); //siivotaan roskakori
-        $x = writeLog($x . "\n", "removingPictures-$date");
+        $x = writeLog($x . "\n", "removingPictures");
     }
 }

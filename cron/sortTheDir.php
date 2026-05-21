@@ -29,6 +29,27 @@ $folders = array_slice(array_filter(scandir(PICTURE_FOLDER)), 2);
 if (count($folders) > 0) {
     foreach ($folders as $file) {
         if (!is_dir(PICTURE_FOLDER . $file)) {
+            $lowercase = null;
+            $new_filename = null;
+            $type = pathinfo($file, PATHINFO_EXTENSION);
+            if (ctype_lower($type) != 1) {
+                //Finna ei hyväksy uppercase päätteitä
+                $tmp_file = pathinfo($file);
+                $lowercase = $tmp_file["filename"] . "." . mb_strtolower($tmp_file["extension"]);
+                rename(PICTURE_FOLDER . $file, PICTURE_FOLDER . $lowercase);
+                $file = $lowercase;
+            }
+            $new_filename = str_replace(" ", "", $file);
+            rename(PICTURE_FOLDER . $file, PICTURE_FOLDER . $new_filename);
+            $file = $new_filename;
+            /*
+              if (strpos($file, " .") !== false) {
+              //Sovellus luo nykyisin kansion sellaisista tiedostonimistä, joiden nimessä on välilyönti ennen tiedostotyyppiä edeltävää pistettä
+              $new_filename = str_replace(" .", ".", $file);
+              $file = $new_filename;
+              }
+             *
+             */
             $modified = filectime(PICTURE_FOLDER . $file) - 60 * 5;
             if ($modified >= time()) {
                 $stop_process = true;

@@ -43,6 +43,21 @@ function htmlStart($title = "", $version = "") {
     Swal.fire('Tietoa ei päivitetty', '', 'info')
   }
 })}</script>";
+    $msg .= "<script>function poistaEra(era_id, collection_site = false) {
+        Swal.fire({
+  title: 'Poista digitointierä<br />Haluatko varmasti poistaa digitointierän? Tämä ei poista digitointierän tiedostoja.',
+  showDenyButton: true,
+  showCancelButton: false,
+  confirmButtonText: `Kyllä`,
+  denyButtonText: `Peruuta`,
+  customClass: 'swal-wide',
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.location='" . WEBROOT . "/sivu/erat/&poista_era=1&poista='+era_id;
+  } else if (result.isDenied) {
+    Swal.fire('Tietoa ei päivitetty', '', 'info')
+  }
+})}</script>";
     $msg .= "    </head>\n";
 
     $msg .= "    <body id='page-top'>\n";
@@ -51,6 +66,7 @@ function htmlStart($title = "", $version = "") {
 }
 
 function htmlSidebar() {
+    global $user;
     global $links;
     global $collection;
     $msg = "<ul class='navbar-nav bg-gradient-primary sidebar sidebar-dark accordion' id='accordionSidebar'>\n";
@@ -60,8 +76,11 @@ function htmlSidebar() {
     $msg .= "        <div class='sidebar-brand-icon rotate-n-15'>\n";
     $msg .= "            <i class='fas fa-file-image'></i>\n";
     $msg .= "        </div>\n";
-    $msg .= "        <div class='sidebar-brand-text mx-3'>Massi</div>\n";
+    $msg .= "        <div class='sidebar-brand-text mx-3'>Massi</div><br />\n";
     $msg .= "    </a>\n";
+    if (isset($user['name'])) {
+        $msg .= "<p class='text-white text-center'>" . $user['name'] . "</p>";
+    }
 
 //    <!-- Divider -->
     $msg .= "    <hr class='sidebar-divider my-0'>\n";
@@ -113,7 +132,7 @@ function htmlSidebar() {
         $msg .= "            <span>" . ucfirst($row["name"]) . "</span></a>\n";
         $msg .= "    </li>\n";
     }
-    $tmp = callRest("POST", WEBROOT . "/rest/collections.php", array("getCollections" => 1), true);
+    $tmp = callRest("POST", "/rest/collections.php", array("getCollections" => 1), true);
     $count = 0;
     foreach ($tmp as $row) {
         $count++;
@@ -133,6 +152,13 @@ function htmlSidebar() {
         $msg .= "            <span>" . $row->otsikko . "</span></a>\n";
         $msg .= "    </li>\n";
     }
+    $msg .= "    <hr class='sidebar-divider d-none d-md-block'>\n";
+    $msg .= "    <div class='sidebar-heading'>Ohjeet</div>\n";
+    $msg .= "    <li class='nav-item link-padding'>\n";
+    $msg .= "        <a class='nav-link' title='Sovelluksen käyttöohje' target ='_blank' href='" . WEBROOT . "/Massadigitointisovelluksen_pikaohje_2024.pdf'>\n";
+    $msg .= "            <i class='fas fa-fw fa-info'></i>\n";
+    $msg .= "            <span>Käyttöohje</span></a>\n";
+    $msg .= "    </li>\n";
     $msg .= "    <hr class='sidebar-divider d-none d-md-block'>\n";
     $msg .= "    <div class='sidebar-heading'>Ylläpito</div>\n";
     foreach ($links as $row) {
@@ -160,7 +186,10 @@ function htmlSidebar() {
 }
 
 function htmlTopBar() {
+    global $hakulause;
     $msg = "            <nav class='navbar navbar-expand navbar-light bg-white topbar mb-4 shadow'>\n";
+    $msg .= "               <div class='container-fluid'>\n";
+    $msg .= "               <div class='col-md-8'>\n";
     if (TEST_SERVER == true) {
         $msg .= "<p class='text-danger'>Tämä on testiympäristö. Tiedostot päätyvät M+ testiympäristöön";
     } else {
@@ -177,9 +206,25 @@ function htmlTopBar() {
     } else {
         $msg .= "</p>";
     }
+
     $msg .= "           <button id='sidebarToggleTop' class='btn btn-link d-md-none rounded-circle mr-3'>\n";
     $msg .= "           <i class='fa fa-bars'></i>\n";
     $msg .= "           </button>\n";
+    $msg .= "           </div>\n";
+    $msg .= "               <div class='col-md-4 text-right'>\n";
+    $msg .= "                   <form method='get' action='" . WEBROOT . "/sivu/erat/' class='no-arrow'>\n";
+    $msg .= "                       <div class='input-group'>\n";
+    $msg .= "                        <input type='text' class='form-control bg-light border-0 small' placeholder='Hae objektinumerolla' value='$hakulause' onfocus='this.value=\"\"'\n";
+    $msg .= "                            aria-label='Search' aria-describedby='basic-addon2' name='hae_objekti'>\n";
+    $msg .= "                        <div class =''>\n";
+    $msg .= "                            <button class='btn btn-primary' type='submit' value='etsi'>\n";
+    $msg .= "                                <i class='fas fa-search fa-sm'></i>\n";
+    $msg .= "                            </button>\n";
+    $msg .= "                        </div>\n";
+    $msg .= "                    </div>\n";
+    $msg .= "                   </form>";
+    $msg .= "               </div>\n";
+    $msg .= "           </div>\n"; //container-fluid
     $msg .= "           </nav>\n";
 
     return $msg;

@@ -14,7 +14,7 @@ require_once REST . '../settings.php';
 $lista_id = $_GET["id"];
 $check = 0; //Tarkistetaan vain 10 ekaa, koska voi olla ajo vielä kesken...
 $data = array("oneJob" => 1, "lista_id" => $lista_id);
-$tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+$tmp = callRest("POST", "/rest/getJobs.php", $data, true);
 $message = "<table class='table table-bordered text-center' id='dataTable' width='100%'>\n";
 $message .= "   <thead><tr><th>Päiväys</th><th>Kokoelmatunnus</th>";
 foreach (JOB_PHASES as $phase) {
@@ -33,7 +33,7 @@ foreach ($tmp as $row) {
     $lisays = "";
     /*
       $data = array("checkCollectionId" => 1, "collection_id" => $row->kokoelmatunnus);
-      $tmp2 = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+      $tmp2 = callRest("POST", "/rest/getJobs.php", $data, true);
       debug($tmp2);
      *
      */
@@ -51,7 +51,7 @@ foreach ($tmp as $row) {
         if ($ready == false && $check < 200) {
             $check++;
             $data = array("checkCollectionId" => 1, "collection_id" => $row->kokoelmatunnus);
-            $tmp2 = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+            $tmp2 = callRest("POST", "/rest/getJobs.php", $data, true);
             if ($tmp2 != "") {
                 $row->$phase = 98; //Ns. toisessa erässä viety
                 $row->rivi_valmis = 98;

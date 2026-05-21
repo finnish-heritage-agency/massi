@@ -51,7 +51,8 @@ function writeLog($text, $moodi = null, $error = true) {
     if (!file_exists(LOGS)) {
         die("Folder " . LOGS . " does not exists");
     }
-    $lokifile = LOGS . $lokifile;
+    $paivays = date("dmY", time()) . "_"; //Tiedostolle aina päiväysnimi
+    $lokifile = LOGS . $paivays . $lokifile;
     $file_open = fopen($lokifile, "a+");
     if ($file_open) {
         fwrite($file_open, date("H:i:s", time()) . ". $text");
@@ -88,6 +89,7 @@ function debug($text) {
  */
 function callRest($method, $url, $data, $decode = false, $retry = false) {
     $curl = curl_init();
+    $url = REST_SERVICE . $url;
     curl_setopt($curl, CURLOPT_TIMEOUT, 3600);
     switch (strtoupper($method)) {
         case "POST":
@@ -258,7 +260,7 @@ function checkMPlusStatus() {
     if ($mplusMaintenance == 1) {
         return "M+ tuotannon uudelleenkäynnistys";
     }
-    $tmp = callRest("POST", WEBROOT . "/rest/checkMplusOnline.php", array("checkMPlus" => 1), true);
+    $tmp = callRest("POST", "/rest/checkMplusOnline.php", array("checkMPlus" => 1), true);
     if ($tmp != "OK") {
         sleep(600); //Rajapinta alhaalla, odotetaan 10 minuuttia
         return "M+ yhteysongelma: $tmp";

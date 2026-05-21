@@ -37,7 +37,7 @@ class SendCollection {
                     continue;
                 }
                 $file_object = new ProcessingFile($this->getFolder(), $file);
-                if (strtolower($file_object->getType()) == "image") {
+                if (strtolower($file_object->getType()) == "image" || strtolower($file_object->getType()) == "text") {
                     $tmp = $this->getMetadata($file_object);
                     if (!isset($tmp["data"])) { //DB connection error, just ignore
                         /*
@@ -54,7 +54,7 @@ class SendCollection {
                     $this->setErrorText($file_object->getErrorText());
                     $this->setError(1);
                 } else {
-                    $this->setErrorText("Tiedostotyyppi ei ole IMAGE!");
+                    $this->setErrorText("Tiedostotyyppi ei ole text tai image!");
                     $this->setError(1);
                 }
             }
@@ -191,7 +191,7 @@ class SendCollection {
         $return["MulTypeVoc"] = $file_object->getType();
         $return["MulOriginalFileDpl"] = $file_object->getBasename();
         $data = array("getCollectionDataToXML" => 1, "name" => $this->getKokoelmatunnus());
-        $data_response = callRest("POST", WEBROOT . "/rest/collections.php", $data, true); //Is collection folder ready...
+        $data_response = callRest("POST", "/rest/collections.php", $data, true); //Is collection folder ready...
 
         if (!isset($data_response->object_id) || $data_response->object_id == "") {
             $this->setError(14);
@@ -199,8 +199,17 @@ class SendCollection {
             $this->changeStatus(0, "lahetys");
             return null;
         }
+        $set_owner = true;
+        foreach (EXCLUDE_EXTENSION as $key => $value) {
+//                    if (strpos($file_object->getBasename(), "dng") === false || strpos($file_object->getBasename(), "xml") === false) {
+            if (strpos($file_object->getBasename(), strtolower($value)) !== false) {
+                $message = writeLog("Ei tallenneta Finna / omistajasuhteita. MääritysId: $key", basename($file_object->getFolder()) . "_xml", false);
+                $set_owner = false;
+            }
+        }
 
-        if (strpos($file_object->getBasename(), "dng") === false) {
+        if ($set_owner == true) {
+//        if (strpos($file_object->getBasename(), "dng") === false) {
             if (isset($data_response->sisainen_tyyppi) && isset($data_response->sisainen_oikeus)) { //Lisenssi
                 $xml .= $this->licenseXML($data_response->sisainen_oikeus, $data_response->sisainen_tyyppi);
             }
@@ -233,11 +242,11 @@ class SendCollection {
             while (RE_TRIES > $tried) {
                 //Lähetetään tiedoston tiedot ja saadaan vastaukseksi uusi IlmentymäId
                 $data = array("sendMPlus" => base64_encode($xml), "moduleId" => $object_id);
-                $id = callRest("POST", WEBROOT . "/rest/sendToMplus.php", $data);
+                $id = callRest("POST", "/rest/sendToMplus.php", $data);
                 if ($id >= 1) {
                     $tried = 100; //Just bigger than re_tries
                     $tmp_data = array("makeReady" => 1, "file" => $file->getBasename(), "folder" => $file->getFolder(), "column" => "file_object_id", "status" => $id);
-                    $paivitys = callRest("POST", WEBROOT . "/rest/files.php", $tmp_data, true);
+                    $paivitys = callRest("POST", "/rest/files.php", $tmp_data, true);
                     $viesti .= "Tiedoston metatiedot " . $file->getBasename() . " on lähetettty onnistuneesti M+ järjestelmään!\n";
                     if ($paivitys != 1) {
                         $viesti .= ". Tietoa ei saatu tallennettua tietokantaan: $paivitys\n";
@@ -269,11 +278,11 @@ class SendCollection {
             while (RE_TRIES > $tried) {
                 //Lähetetään tiedoston tiedot ja saadaan vastaukseksi uusi IlmentymäId
                 $tmp_data = array("MulOriginalFileDpl" => 1, "file" => $file->getStaticName(), "moduleId" => $file_object_id);
-                $ok = callRest("POST", WEBROOT . "/rest/sendToMplus.php", $tmp_data);
+                $ok = callRest("POST", "/rest/sendToMplus.php", $tmp_data);
                 if ($ok == 1) {
                     $tried = 100; //Just bigger than re_tries
                     $tmp_data = array("makeReady" => 1, "file" => $file->getBasename(), "folder" => $file->getFolder(), "column" => "lahetetty", "status" => 2);
-                    $paivitys = callRest("POST", WEBROOT . "/rest/files.php", $tmp_data, true);
+                    $paivitys = callRest("POST", "/rest/files.php", $tmp_data, true);
                     $viesti .= "Tiedosto " . $file->getBasename() . " saatiin lähetttyä M+ järjestelmään. ID: $file_object_id\n";
                     if ($paivitys != 1) {
                         $viesti .= ". Tietoa ei saatu tallennettua tietokantaan: $paivitys\n";
@@ -298,7 +307,7 @@ class SendCollection {
         $tried = 0;
         while (RE_TRIES > $tried) {
             $tmp_data = array("moduleId" => $id);
-            $ok = callRest("POST", WEBROOT . "/rest/disableThumbnails.php", $tmp_data);
+            $ok = callRest("POST", "/rest/disableThumbnails.php", $tmp_data);
             if ($ok != "") {
                 $tried = 100;
             } else {
@@ -312,7 +321,7 @@ class SendCollection {
     public function changeStatus($status, $phase = "metatiedot") {
         if ($this->getRowId() != 0) {
             $data1 = array("row_id" => $this->getRowId(), "phase" => $phase, "status" => $status);
-            $response = callRest("POST", WEBROOT . "/rest/changeProsessingStatus.php", $data1, true);
+            $response = callRest("POST", "/rest/changeProsessingStatus.php", $data1, true);
             return $response;
         } else {
             return 0;
@@ -321,7 +330,7 @@ class SendCollection {
 
     public function saveCountOfTheTries() {
         $data1 = array("saveCountOfTheTries" => 1, "row_id" => $this->getRowId());
-        $response = callRest("POST", WEBROOT . "/rest/collections.php", $data1, true);
+        $response = callRest("POST", "/rest/collections.php", $data1, true);
         return $response;
     }
 
@@ -358,7 +367,7 @@ class SendCollection {
         $msg .= "       <moduleReference name='MulObjectRef' targetModule='Object'>\n";
         $msg .= "           <moduleReferenceItem moduleItemId='$module_id'>\n";
 //        $msg .= "<dataField name='$filename'>\n";
-        if (strtolower($extension) == "tif" || strtolower($extension) == "jpg") {
+        if (strtolower($extension) == "tif" || strtolower($extension) == "jpg" || strtolower($extension) == "pdf") {
             if ($sequence == 1 && $thumb_ok == false) {
                 $thumb_ok = true;
                 $msg .= "<dataField name='ThumbnailBoo'>\n";
@@ -462,13 +471,15 @@ class SendCollection {
 
     /**
      * Tiedoston tyyppi. Oletuksena kuva
-     * @param string $type (VAIN image tällä hetkellä)
+     * @param string $type
      * @return part of xml
      */
     private function imageTypeXML($type) {
         $value = 105829;
         if (strtolower($type) == "image") {
             $value = 105829;
+        } elseif (strtolower($type) == "text") {
+            $value = 39578;
         }
         $xml = "<vocabularyReference name='MulTypeVoc' id='30341' instanceName='MulTypeVgr' >\n";
         $xml .= "    <vocabularyReferenceItem id='$value'>\n";
@@ -489,6 +500,8 @@ class SendCollection {
             $value = 198034;
         } elseif (strpos($tmp, "jpg") === true) {
             $value = 59200;
+        } elseif (strpos($tmp, "pdf") === true) {
+            $value = 39578;
         } else {
             return null;
         }
@@ -498,7 +511,6 @@ class SendCollection {
         $xml .= "</vocabularyReference>\n";
         return $xml;
     }
-
 }
 
 /**
@@ -539,8 +551,10 @@ class ProcessingFile {
             $this->error = 1;
             $this->errorText = "Tiedostopäätettä ei löydy tiedostotyypit (TYPES) listalta. ";
         }
-        $this->data["camera"] = $this->getCameraUsed();
-        $this->data["metadata"] = $this->getImageMetadata();
+        if (strpos(strtolower($this->extension), "image") === true) {
+            $this->data["camera"] = $this->getCameraUsed();
+            $this->data["metadata"] = $this->getImageMetadata();
+        }
     }
 
     function getFolder() {
@@ -645,46 +659,45 @@ class ProcessingFile {
     private function getCameraUsed() {
 // Check if the variable is set and if the file itself exists before continuing
 // There are 2 arrays which contains the information we are after, so it"s easier to state them both
-        $exif_ifd0 = @read_exif_data($this->staticName, "IFD0", 0);
-        $exif_exif = @read_exif_data($this->staticName, "EXIF", 0);
+        $exif_data = @exif_read_data($this->staticName);
 // Make
-        if (@array_key_exists("Make", $exif_ifd0)) {
-            $camMake = $exif_ifd0["Make"];
+        if (@array_key_exists("Make", $exif_data)) {
+            $camMake = $exif_data["Make"];
         } else {
             $camMake = $this->notFound;
         }
 // Model
-        if (@array_key_exists("Model", $exif_ifd0)) {
-            $camModel = $exif_ifd0["Model"];
+        if (@array_key_exists("Model", $exif_data)) {
+            $camModel = $exif_data["Model"];
         } else {
             $camModel = $this->notFound;
         }
 // Exposure
-        if (@array_key_exists("ExposureTime", $exif_ifd0)) {
-            $camExposure = $exif_ifd0["ExposureTime"];
+        if (@array_key_exists("ExposureTime", $exif_data)) {
+            $camExposure = $exif_data["ExposureTime"];
         } else {
             $camExposure = $this->notFound;
         }
 // Aperture
-        if (@array_key_exists("ApertureFNumber", $exif_ifd0["COMPUTED"])) {
-            $camAperture = $exif_ifd0["COMPUTED"]["ApertureFNumber"];
+        if (@array_key_exists("ApertureFNumber", $exif_data["COMPUTED"])) {
+            $camAperture = $exif_data["COMPUTED"]["ApertureFNumber"];
         } else {
             $camAperture = $this->notFound;
         }
 // Date
-        if (@array_key_exists("DateTime", $exif_ifd0)) {
-            $camDate = $exif_ifd0["DateTime"];
+        if (@array_key_exists("DateTimeOriginal", $exif_data)) {
+            $camDate = $exif_data["DateTimeOriginal"];
         } else {
             $camDate = $this->notFound;
         }
 // ISO
-        if (@array_key_exists("ISOSpeedRatings", $exif_exif)) {
-            $camIso = $exif_exif["ISOSpeedRatings"];
+        if (@array_key_exists("ISOSpeedRatings", $exif_data)) {
+            $camIso = $exif_data["ISOSpeedRatings"];
         } else {
             $camIso = $this->notFound;
         }
-        if (@array_key_exists("Orientation", $exif_ifd0)) {
-            $orientation = $exif_ifd0["Orientation"];
+        if (@array_key_exists("Orientation", $exif_data)) {
+            $orientation = $exif_data["Orientation"];
         } else {
             $orientation = $this->notFound;
         }
@@ -700,7 +713,7 @@ class ProcessingFile {
     }
 
     private function getImageMetadata() {
-        $exif_ifd0 = @read_exif_data($this->staticName, "IFD0", 0);
+        $exif_ifd0 = @exif_read_data($this->staticName);
         if (@array_key_exists("Artist", $exif_ifd0)) {
             $artist = $exif_ifd0["Artist"];
         } else {
@@ -752,5 +765,4 @@ class ProcessingFile {
         }
         return $tmp;
     }
-
 }

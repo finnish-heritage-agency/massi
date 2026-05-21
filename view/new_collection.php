@@ -29,7 +29,7 @@ if (isset($_POST["new_collection"])) {
     $tmp = explode("  ", $tmp_parser);
     //19.2.2021. Haluttu tarkistus, onko objekti jo digitoitu
     $tmp_data = array("checkCollectionsRows" => 1, "rows" => $tmp_parser);
-    $data = callRest("POST", WEBROOT . "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
+    $data = callRest("POST", "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
 }
 
 $message = submitPopup();
@@ -50,11 +50,11 @@ $content .= "<input type='file' class='dropify' name='fileToUpload' id='fileToUp
 $message .= "<div class='row'>";
 if ($data != "") {
     $data1 = array("getArtists" => 1, "active" => 1);
-    $tmp_artist = callRest("POST", WEBROOT . "/rest/artists.php", $data1, true);
+    $tmp_artist = callRest("POST", "/rest/artists.php", $data1, true);
     $data2 = array("getLegals" => 1, "active" => 1);
-    $tmp_license = callRest("POST", WEBROOT . "/rest/legals.php", $data2, true);
+    $tmp_license = callRest("POST", "/rest/legals.php", $data2, true);
     $data3 = array("getLegalTypes" => 1, "active" => 1);
-    $tmp_type = callRest("POST", WEBROOT . "/rest/legalTypes.php", $data3, true);
+    $tmp_type = callRest("POST", "/rest/legalTypes.php", $data3, true);
     $message .= "<form class='col-md-12' action='" . WEBROOT . "/sivu/erat/' method='post' autocomplete='off'>";
     $message .= "<div class='row'>\n";
     $message .= makeDropDownFromArray($tmp_artist, "artist", "artist_id", false, 4, "Tekijä", false, "new_era");
@@ -66,8 +66,8 @@ if ($data != "") {
     $message .= "   <label class='form-check-label' for='inlineRadio1'>Digitointierän tiedostot julkaistaan Finnassa</label>\n";
     $message .= "<div class='row'>\n";
     $message .= "   <div class='offset-8 col-md-4'>\n";
-    $message .= "       <label for='title' class='text-dark'>Erän tallentaja (pakollinen, min 5 merkkiä)</label>\n";
-    $message .= "       <input type='text' placeholder='Erän tallentaja' name='batch_saver' class ='form-control' minlength='5' required>";
+    $message .= "       <label for='title' class='text-dark'>Erän tallentaja (pakollinen, 5-20 merkkiä)</label>\n";
+    $message .= "       <input type='text' placeholder='Erän tallentaja' name='batch_saver' class ='form-control' minlength='5' maxlength='20' required>";
     $message .= "       <input type='submit' name='add_collection' Value='Tallenna listaus'  class = 'btn btn-success text-right'>";
     $message .= "       </div>\n";
     $message .= "   </div>\n";
@@ -95,7 +95,7 @@ if ($data != "") {
                 "text" => $folder, // pitää olla aika pitkä tai ei tulostu
                 "code" => "TYPE_CODE_128",
             );
-            $barcode = callRest("POST", WEBROOT . "/rest/barCodeGenerator.php", $data);
+            $barcode = callRest("POST", "/rest/barCodeGenerator.php", $data);
         } else {
             $barcode = "";
         }

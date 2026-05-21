@@ -24,7 +24,7 @@ if (count($folders) > 0) {
         } else {
             $msg .= "Hakemisto on luotu: " . date("d.m.Y H:i", filectime($pictures . $folder)) . " --> ";
         }
-        $tmp = callRest("POST", WEBROOT . "/rest/canRemove.php", $data, true);
+        $tmp = callRest("POST", "/rest/canRemove.php", $data, true);
 
         if (!isset($tmp[0])) {
             $msg .= " **** hakemistoa ei löytynyt tietokannasta. **** \n";

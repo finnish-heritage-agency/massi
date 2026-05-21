@@ -24,7 +24,7 @@ echo($message);
 //Käyttö
 /*
 $data = array("fileObjectId" => $fileObjectId);
-$poisto = callRest("POST", WEBROOT . "/rest/deleteAttachment.php", $data, true);
+$poisto = callRest("POST", "/rest/deleteAttachment.php", $data, true);
 if ($poisto == 1) {
     $viesti .= "Poistettiin epäonnistunut tiedosto M+ järjestelmästä.";
 } else {

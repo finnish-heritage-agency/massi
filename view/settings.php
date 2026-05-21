@@ -7,7 +7,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "name" => checkPost($_POST["name"]),
         "internal_id" => checkNumber($_POST["internal_id"]),
     );
-    $return = callRest("POST", WEBROOT . "/rest/addNewArtist.php", $data, true);
+    $return = callRest("POST", "/rest/addNewArtist.php", $data, true);
     if ($return > 0) {
         $_SESSION["tallennus_ok"] = "Tekijä on tallennettu.";
         header("location: ./");
@@ -17,7 +17,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "changeStatus" => checkNumber($_POST["artist_id"]),
         "active" => 0
     );
-    $return = callRest("POST", WEBROOT . "/rest/artists.php", $data, true);
+    $return = callRest("POST", "/rest/artists.php", $data, true);
     if ($return > 0) {
         $_SESSION["tallennusvirhe"] = "Tekijä on poistettu.";
         header("location: ./");
@@ -28,7 +28,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "license" => checkPost($_POST["license"]),
         "internal_name" => checkPost($_POST["internal_name"]),
     );
-    $return = callRest("POST", WEBROOT . "/rest/addNewLegal.php", $data, true);
+    $return = callRest("POST", "/rest/addNewLegal.php", $data, true);
     if ($return > 0) {
         $_SESSION["tallennus_ok"] = "Lisenssi on tallennettu.";
         header("location: ./");
@@ -38,7 +38,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "changeStatus" => checkNumber($_POST["legal_id"]),
         "active" => 0
     );
-    $return = callRest("POST", WEBROOT . "/rest/legals.php", $data, true);
+    $return = callRest("POST", "/rest/legals.php", $data, true);
     if ($return > 0) {
         $_SESSION["tallennusvirhe"] = "Lisenssin status on poistettu.";
         header("location: ./");
@@ -49,7 +49,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "type_name" => checkPost($_POST["legal_type"]),
         "internal_name" => checkPost($_POST["internal_name"]),
     );
-    $return = callRest("POST", WEBROOT . "/rest/addNewLegalType.php", $data, true);
+    $return = callRest("POST", "/rest/addNewLegalType.php", $data, true);
 
     if ($return > 0) {
         $_SESSION["tallennus_ok"] = "Oikeustyyppi on tallennettu.";
@@ -60,7 +60,7 @@ if (isset($_POST["save_artist"])) { //add an artist
         "changeStatus" => checkNumber($_POST["type_id"]),
         "active" => 0
     );
-    $return = callRest("POST", WEBROOT . "/rest/legalTypes.php", $data, true);
+    $return = callRest("POST", "/rest/legalTypes.php", $data, true);
     if ($return > 0) {
         $_SESSION["tallennusvirhe"] = "Oikeustyyppi status on poistettu.";
         header("location: ./");
@@ -72,7 +72,7 @@ if (isset($_POST["save_artist"])) { //add an artist
 //Legal == oikeus
 //ARTIST
 $data1 = array("getArtists" => 1);
-$tmp_artist = callRest("POST", WEBROOT . "/rest/artists.php", $data1, true);
+$tmp_artist = callRest("POST", "/rest/artists.php", $data1, true);
 $artist = "<form class='needs-validation' method='post' action='' novalidate>\n";
 $artist .= "<label for='new_artist'>" . text("add a new author") . "</label>\n";
 $artist .= "<div class='form-row'>\n";
@@ -96,8 +96,8 @@ $msg .= siteBox("Liitetiedoston tekijätieto", $artist, $selection_artist);
 //Legals
 $data2 = array("getLegals" => 1);
 $data3 = array("getLegalTypes" => 1);
-$tmp_legal = callRest("POST", WEBROOT . "/rest/legals.php", $data2, true);
-$tmp_legal_types = callRest("POST", WEBROOT . "/rest/legalTypes.php", $data3, true);
+$tmp_legal = callRest("POST", "/rest/legals.php", $data2, true);
+$tmp_legal_types = callRest("POST", "/rest/legalTypes.php", $data3, true);
 $input1 = "<form class='needs-validation' method='post' action='' novalidate>\n";
 $input1 .= "<label for='new_artist'>" . text("add a legal") . "</label>\n";
 $input1 .= "<div class='form-row'>\n";

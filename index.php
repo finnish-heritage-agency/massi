@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 /**
  * htaccess tiedostossa tehdään http --> https
  */
@@ -7,9 +9,18 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(__FILE__) . '/');
 }
 require_once ROOT . "settings.php";
+if (file_exists(ROOT . "kirjautuminen/index.php")) {
+    if (!isset($_SESSION["user"])) {
+        header("location: " . WEBROOT . "kirjautuminen/index.php");
+        die();
+    } else {
+        $user = $_SESSION["user"];
+    }
+}
 require(ROOT . 'controllers/locales.php'); //Always the last
 global $version;
-session_start(); //After OOP requires
+$hakulause = null;
+
 showErrors(0);
 $folder = "view/";
 $pages = array(//if The site doesn not found here, 404 will show
@@ -56,12 +67,20 @@ if (isset($_GET["debug"])) {
     }
     writeLog("test writing in file");
 }
-
 //SITE
 if (isset($_GET ['page']) && $_GET ['page'] != "") {
     $selected_site = $_GET ['page'];
 } else {
     $selected_site = "etusivu";
+}
+if (strpos($_SERVER["REQUEST_URI"], "?") !== false) {//Jos haetaan objektia. Tällä yritetty estää vähän haksausta
+    $haku_tmp = $_SERVER["REQUEST_URI"];
+    $haku_tmp = explode("?hae_objekti=", $haku_tmp);
+
+    if (isset($haku_tmp[1])) {
+        $hakulause = $haku_tmp[1];
+        $hakulause = urldecode($hakulause);
+    }
 }
 $site = htmlStart($selected_site, $version);
 

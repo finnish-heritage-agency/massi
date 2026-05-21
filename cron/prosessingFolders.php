@@ -25,7 +25,7 @@ $error_text = "";
 $xml_error = false;
 $send_error = false;
 $tmp_data = array("phase" => "tarkistus", "status" => 2);
-$tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $tmp_data, true); //haetaan semmoiset rivit, joissa tarkistus = 2 ja valmis = 0
+$tmp = callRest("POST", "/rest/getJobs.php", $tmp_data, true); //haetaan semmoiset rivit, joissa tarkistus = 2 ja valmis = 0
 
 if (count($tmp) > 0) {
     foreach ($tmp as $row) {
@@ -68,7 +68,7 @@ if (count($tmp) > 0) {
          */
         foreach ($data->getFiles() as $file) {
             $tmp_data = array("getSavedFileData" => 1, "filename" => $file->getBasename());
-            $saved_data = callRest("POST", WEBROOT . "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
+            $saved_data = callRest("POST", "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
             if (!isset($saved_data->file_object_id) || !is_numeric($saved_data->file_object_id) || $saved_data->file_object_id == 0) {
                 $file_id = $data->sendMultimediaContent($file);
             } else {
@@ -95,7 +95,7 @@ if (count($tmp) > 0) {
         }
         foreach ($data->getFiles() as $file) { //Lähetetään tiedostot
             $tmp_data = array("getSavedFileData" => 1, "filename" => $file->getBasename());
-            $saved_data = callRest("POST", WEBROOT . "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
+            $saved_data = callRest("POST", "/rest/collections.php", $tmp_data, true); // check is file_object_id generated already
             if (isset($saved_data->file_object_id) && is_numeric($saved_data->file_object_id) && $saved_data->file_object_id > 0) {
                 $file_id = $saved_data->file_object_id;
             } else {
@@ -113,7 +113,7 @@ if (count($tmp) > 0) {
                 } else {//Muutetaan tiedostonnimi M+ järjestelmään
                     $xml = $data->getChangeNameXml($file->getBasename(), $file_id);
                     $tmp_data = array("changeName" => base64_encode($xml), "moduleId" => $file_id);
-                    $ok = callRest("POST", WEBROOT . "/rest/sendToMplus.php", $tmp_data, true);
+                    $ok = callRest("POST", "/rest/sendToMplus.php", $tmp_data, true);
                     $viesti = writeLog("\nXML Change name: $file_id\n $xml \n XML STOPS\n", basename($file->getFolder()) . "_xml", false);
                     if ($ok != 1) {
                         $error_text .= "Tiedoston (" . $file->getBasename() . ") nimen vaihtaminen MuseumPlus järjestelmässä epäonnistui.\n";
@@ -138,6 +138,6 @@ if (count($tmp) > 0) {
         }
     }
 } else {
-    $message = "Ei löytynyt uusia rivejä...";
-    $message = writeLog($message);
+    //$message = "Ei löytynyt uusia rivejä...";
+    //$message = writeLog($message);
 }

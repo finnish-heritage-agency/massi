@@ -9,17 +9,14 @@ class Job {
     private $jobPhases = JOB_PHASES;
     private $jobPhaseStatuses;
     private $logFile;
+    private $logFolder;
 
     public function __construct($job_id = 0, $row_id = 0, $collection_name = "") {
         $this->jobId = $job_id;
         $this->rowId = $row_id;
         $this->collectionName = $collection_name;
-        //26.9.2022 Halutaan hakemistoon jättää pistenimi
-        //$tmp = str_replace(".", "_", $this->collectionName);
-        $tmp = $this->collectionName;
-        $this->logFile = LOGS . str_replace(":", "_", $tmp) . "-log";
-
-//        $this->nextPhase = $this->getNextPhaseFromArray();
+        $this->logFolder = LOGS;
+        $this->logFile = str_replace(":", "_", $collection_name) . "-log";
     }
 
     function getJobPhaseStatuses() {
@@ -35,7 +32,11 @@ class Job {
     }
 
     function getLogFile() {
-        return $this->logFile;
+        $hak_tiedosto = $this->logFolder . $this->logFile;
+        foreach (glob($this->logFolder . "*" . $this->logFile) as $filename) {
+            $hak_tiedosto = $filename;
+        }
+        return $hak_tiedosto;
     }
 
     function setJobPhaseStatuses($jobPhaseStatuses): void {
@@ -55,5 +56,4 @@ class Job {
             return $this->phase;
         }
     }
-
 }

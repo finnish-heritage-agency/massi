@@ -3,6 +3,7 @@
 $author = null;
 $right = null;
 $right_type = null;
+$virheita = 0;
 $message = submitPopup();
 if (BY_DIGITOINTIERA == false) {
     if (isset($_GET["rivi_id"])) { //Changing row status in Collection
@@ -13,7 +14,7 @@ if (BY_DIGITOINTIERA == false) {
                 "changeCollectionRowStatus" => $_GET["rivi_id"],
                 "progress" => $progress
             );
-            $tmp = callRest("POST", WEBROOT . "/rest/editCollection.php", $data);
+            $tmp = callRest("POST", "/rest/editCollection.php", $data);
             if ($tmp != 1) {
                 writeLog("COLLECTION ERROR 1, Kokoelman muokkaus ei onnistunut. Syy: $tmp");
             }
@@ -22,7 +23,7 @@ if (BY_DIGITOINTIERA == false) {
                     "newJob" => 1,
                     "row_id" => $_GET["rivi_id"],
                 );
-                $tmp = callRest("POST", WEBROOT . "/rest/addNewJob.php", $data1, true);
+                $tmp = callRest("POST", "/rest/addNewJob.php", $data1, true);
             }
             if (is_numeric($tmp)) {
                 $_SESSION["tallennus_ok"] = "Aineisto siirretty työjonoon.";
@@ -64,7 +65,7 @@ if (isset($_POST["edit_collection"])) {
             "type_id" => $type_id,
             "id" => $id,
         );
-        $tmp = callRest("POST", WEBROOT . "/rest/collections.php", $data, true);
+        $tmp = callRest("POST", "/rest/collections.php", $data, true);
         if ($tmp == 1) {
             $_SESSION["tallennus_ok"] = "Tiedot on päivitetty";
             header("location: " . WEBROOT . "/sivu/era/" . $_GET["id"] . "/");
@@ -72,9 +73,40 @@ if (isset($_POST["edit_collection"])) {
     }
 }
 
+if (is_numeric($_GET["id"])) {
+    $data = array("oneJob" => 1, "lista_id" => $_GET["id"], "error" => true);
+    $virhe_tmp = callRest("POST", "/rest/getJobs.php", $data, true);
+    if (is_array($virhe_tmp)) {
+        $virheita = count($virhe_tmp);
+    }
+    if (isset($_GET["rivi_id"]) && $_GET["rivi_id"] == "era_uudelleen_ajoon") {
+        foreach ($virhe_tmp as $virherivi) {
+            $phase = null;
+            if ($virherivi->metatiedot == -1) {
+                $phase = "metatiedot";
+            } elseif ($virherivi->tarkistus == -1) {
+                $phase = "tarkistus";
+            } elseif ($virherivi->lahetys == -1) {
+                $phase = "lahetys";
+            } else {
+                continue;
+            }
+            $row_id = checkNumber($virherivi->rivi_id);
+            $status = 0;
+            $retry = 1;
+            if ($phase != null) {
+                $data1 = array("row_id" => $row_id, "phase" => $phase, "status" => $status, "error" => 0, "retry" => $retry);
+                $ok = callRest("POST", "/rest/changeProsessingStatus.php", $data1, true);
+            }
+        }
+        header("location:" . WEBROOT . "/sivu/era/" . $_GET["id"] . "/");
+    }
+    unset($virhe_tmp);
+}
+
 
 $data = array("getOneCollectionById" => $_GET["id"]);
-$tmp = callRest("POST", WEBROOT . "/rest/collections.php", $data, true);
+$tmp = callRest("POST", "/rest/collections.php", $data, true);
 $collection = $tmp[0];
 $tmp_rows = $tmp[1];
 if ($tmp_rows[0]->valmis == 0) {
@@ -122,6 +154,9 @@ if ($tmp[0]->tyyppi != "") {
 $message .= "</h4></div>";
 $message .= "<div class='col-md-8'>";
 
+if ($virheita > 0) {
+    $message .= "<a href='" . WEBROOT . "/sivu/era/" . $_GET["id"] . "/era_uudelleen_ajoon' class='text-right no_pdf text-danger'><i class='fa fa-recycle' aria-hidden='true'></i> " . text("restart the failed ones") . " ($virheita kpl)</a><br />";
+}
 $message .= "<a href='" . WEBROOT . "/pdfgenerator/index.php?url=" . $url . "print' class='text-right no_pdf' target='_blank'><i class='fa fa-print' aria-hidden='true'></i> " . text("print") . "</a>";
 
 if ($waiting == true) {
@@ -129,7 +164,10 @@ if ($waiting == true) {
     $modal = makeModalView("Muokkaa", "edit_collection", "Tallenna", "./", $content, "", "btn-outline-success");
     $message .= "<div class='no_pdf'>" . $modal["button"] . "</div>";
     $message .= $modal["message"];
-    $message .= "<br /><button class='btn btn-sm btn-outline-success text-right no_pdf' aria-label='' onclick=\"varmistus(" . $collection->lista_id . ",'true')\">Aloita tiedostojen siirto</button>";
+    $message .= "<br /><button class='btn btn-sm btn-outline-success text-right no_pdf' aria-label='' onclick=\"varmistus(" . $collection->lista_id . ",'true')\">";
+    $message .= " <span class='badge badge-default' alt='Poista' title='Poista'><i class='fas fa-angle-right'> </i></span> Aloita tiedostojen siirto</button> ";
+    $message .= " <button class='btn btn-sm btn-outline-danger no_pdf' aria-label='' onclick=\"poistaEra(" . $collection->lista_id . ",'true')\">";
+    $message .= " <span class='badge badge-default' alt='Poista' title='Poista'><i class='fas fa-trash'> </i></span> Poista digitointierä</button>";
 }
 
 $message .= "</div>\n";
@@ -165,7 +203,7 @@ if ($waiting == false && !isset($_GET["rivi_id"])) {
             "text" => $code,
             "code" => "TYPE_CODE_128",
         );
-        $barcode = callRest("POST", WEBROOT . "/rest/barCodeGenerator.php", $data);
+        $barcode = callRest("POST", "/rest/barCodeGenerator.php", $data);
         $message .= "       <tr>\n";
         $message .= "           <td>" . $row->kokoelmatunnus . "</td>\n";
         if (BY_DIGITOINTIERA == false) {
@@ -187,7 +225,7 @@ if ($waiting == false && !isset($_GET["rivi_id"])) {
         }
         if (isset($_GET["rivi_id"]) && $_GET["rivi_id"] == "print" && $waiting == false) {
             $data = array("getOneJobForLogs" => 1, "rivi_id" => $row->rivi_id);
-            $tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+            $tmp = callRest("POST", "/rest/getJobs.php", $data, true);
             if (isset($tmp[0])) {
                 $tmp = $tmp[0];
             }
@@ -213,11 +251,11 @@ echo makeCard(12, $title, $message, false);
 function makeEditCollection($finna, $artist, $license, $type, $id) {
     $checked = null;
     $data1 = array("getArtists" => 1, "active" => 1);
-    $tmp_artist = callRest("POST", WEBROOT . "/rest/artists.php", $data1, true);
+    $tmp_artist = callRest("POST", "/rest/artists.php", $data1, true);
     $data2 = array("getLegals" => 1, "active" => 1);
-    $tmp_license = callRest("POST", WEBROOT . "/rest/legals.php", $data2, true);
+    $tmp_license = callRest("POST", "/rest/legals.php", $data2, true);
     $data3 = array("getLegalTypes" => 1, "active" => 1);
-    $tmp_type = callRest("POST", WEBROOT . "/rest/legalTypes.php", $data3, true);
+    $tmp_type = callRest("POST", "/rest/legalTypes.php", $data3, true);
     if ($finna == 1) {
         $checked = "checked";
     }
