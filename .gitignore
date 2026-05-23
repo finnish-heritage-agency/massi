@@ -33,4 +33,7 @@ vendor/
 database/
 *.sql
 
+# temporary files
+tmp/
+
 
