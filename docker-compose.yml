@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: massi-php83
+    container_name: massi-app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - php-sessions:/var/lib/php/sessions
+    working_dir: /var/www/html
+    command: ["sh", "-c", "chown -R www-data:www-data /var/lib/php/sessions && apache2-foreground"]
+    restart: always
+
+# THIS MUST BE AT THE BOTTOM AND NOT INDENTED
+volumes:
+  php-sessions:

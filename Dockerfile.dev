@@ -1,0 +1,42 @@
+FROM php:8.3-apache
+
+# System packages
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    ca-certificates \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libzip-dev \
+    libgettextpo-dev \
+    zip
+
+# Add corporate/root certificate
+COPY zscaler.crt /usr/local/share/ca-certificates/zscaler.crt
+
+RUN update-ca-certificates
+
+# Configure GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
+# PHP extensions
+RUN docker-php-ext-install \
+    gd \
+    intl \
+    pdo_mysql \
+    zip \
+    gettext
+
+# Apache modules
+RUN a2enmod rewrite
+
+# Apache configuration
+RUN echo "HostnameLookups Off" >> /etc/apache2/apache2.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
