@@ -9,6 +9,8 @@ services:
     container_name: massi-app
     ports:
       - "8080:80"
+    env_file:
+      - .env
     volumes:
       - .:/var/www/html
       - php-sessions:/var/lib/php/sessions

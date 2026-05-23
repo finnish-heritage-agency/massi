@@ -11,8 +11,23 @@ if (!defined('ROOT')) {
 require_once ROOT . "settings.php";
 if (file_exists(ROOT . "kirjautuminen/index.php")) {
     if (!isset($_SESSION["user"])) {
-        header("location: " . WEBROOT . "kirjautuminen/index.php");
-        die();
+        if (
+            defined('TEST_SERVER') &&
+            TEST_SERVER === true &&
+            getenv('APP_ENV') === 'local'
+        ) {
+            // Local development bypass: create a mock logged-in user and continue.
+            $_SESSION["user"] = [
+                'name' => 'Lokaali Kehittäjä',
+                'email' => 'testi@museovirasto.fi',
+                'id_token' => 'mock-id-token',
+                'access_token' => 'mock-access-token'
+            ];
+            $user = $_SESSION["user"];
+        } else {
+            header("location: " . WEBROOT . "kirjautuminen/index.php");
+            die();
+        }
     } else {
         $user = $_SESSION["user"];
     }
@@ -30,20 +45,20 @@ $pages = array(//if The site doesn not found here, 404 will show
     'kasittelyssa' => $folder . "handling.php",
     'uusiEra' => $folder . "new_collection.php",
     'erat' => $folder . "collections.php",
-//    'erat' => $folder . "new_collections.php",
+    //    'erat' => $folder . "new_collections.php",
     'era' => $folder . "collection.php",
     'lokit' => $folder . "logs.php",
     'siirrot' => $folder . "all_transfers.php",
     'asetukset' => $folder . "settings.php",
     'eranLokit' => $folder . "checkCollectionLogs.php",
-//    'testi' => $folder . "testi.php",
+    //    'testi' => $folder . "testi.php",
 );
 //sidebar links (not dropdowns)
 $links = array(
     array("name" => text("technical settings"), "url" => "oletusarvot", "ico" => "fa-cogs"),
-//    array("name" => text("pending"), "url" => "kasittelyssa", "ico" => "fa-file-pdf"),
+    //    array("name" => text("pending"), "url" => "kasittelyssa", "ico" => "fa-file-pdf"),
     array("name" => text("technical logs"), "url" => "lokit", "ico" => "fa-flag"),
-//    array("name" => text("settings"), "url" => "asetukset", "ico" => "fa-cogs"),
+    //    array("name" => text("settings"), "url" => "asetukset", "ico" => "fa-cogs"),
 //    array("name" => text("all transfers"), "url" => "siirrot/refresh", "ico" => "fa-exchange-alt"),
 );
 
@@ -57,7 +72,7 @@ $langs = array("fi_FI" => "Suomi", "en" => "Englanti", "swe" => "Ruotsi");
 
 //Just checking....
 if (isset($_GET["debug"])) {
-    echo"Debugging requires | ";
+    echo "Debugging requires | ";
     echo text("test") . " "; //Check is gettext installed
     echo "| Check BarCode --> ";
     if (!extension_loaded('imagick')) {
@@ -68,8 +83,8 @@ if (isset($_GET["debug"])) {
     writeLog("test writing in file");
 }
 //SITE
-if (isset($_GET ['page']) && $_GET ['page'] != "") {
-    $selected_site = $_GET ['page'];
+if (isset($_GET['page']) && $_GET['page'] != "") {
+    $selected_site = $_GET['page'];
 } else {
     $selected_site = "etusivu";
 }
