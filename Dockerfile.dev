@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     zip
 
 # Add corporate/root certificate
-COPY zscaler.crt /usr/local/share/ca-certificates/zscaler.crt
+# COPY zscaler.crt /usr/local/share/ca-certificates/zscaler.crt
 
 RUN update-ca-certificates
 
