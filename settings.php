@@ -64,7 +64,7 @@ if (isset($argv[1]) && $argv[1] == "check") {
     $phpt = array(
         "php-mbstring",
         "php-gd",
-        "php-8.2",
+        "php-8.3",
 //        "php-pdo",
         "php-json",
         "php-mysqlnd",

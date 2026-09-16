@@ -522,7 +522,7 @@ class ProcessingFile {
     private $filename;
     private $basename;
     private $staticName;
-    private $extension;
+    private $extension = "";
     private $type;
     private $notFound = "Unavailable";
     private $data;

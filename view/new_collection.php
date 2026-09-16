@@ -5,13 +5,13 @@ $data = null;
 $virhe = null;
 if (isset($_POST["new_collection"])) {
     $title = checkPost($_POST["title"]);
-    if (isset($_FILES) && $_FILES["fileToUpload"]["tmp_name"] != "") {
+    if (isset($_FILES["fileToUpload"]["tmp_name"]) && $_FILES["fileToUpload"]["tmp_name"] != "") {
         $file = $_FILES;
         $checked = checkFile($file);
         if ($checked == 1) {
             $tmp_parser = file_get_contents($file["fileToUpload"]["tmp_name"]);
             $tmp_parser = str_replace("\n", " ", $tmp_parser); //CSV make lines in seperate rows
-            $tmp_parser = utf8_encode($tmp_parser);
+            $tmp_parser = mb_convert_encoding($tmp_parser, 'UTF-8', 'ISO-8859-1');
         }
         $tmp_parser .= $_POST["rows"];
         $tmp_parser = preg_replace("/\r|\n/", "", $tmp_parser);

@@ -147,6 +147,10 @@ class Museum extends Auth {
             }
         }
 
+        $array = [];
+        if (!isset($attributes)) {
+            return $array;
+        }
         foreach ($attributes->moduleReferenceItem as $rivi) {
             if ($rivi->dataField->value == "true") {
                 $id = $rivi->attributes()->moduleItemId;

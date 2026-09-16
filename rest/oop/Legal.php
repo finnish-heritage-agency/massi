@@ -41,6 +41,7 @@ class Legal {
                 return -2;
             }
             $tmp = $stmt->fetchAll();
+            $array = [];
             foreach ($tmp as $row) {
                 $array[] = array(
                     "id" => $row["lisenssi_id"],

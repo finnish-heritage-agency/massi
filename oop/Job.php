@@ -10,6 +10,7 @@ class Job {
     private $jobPhaseStatuses;
     private $logFile;
     private $logFolder;
+    private $phase;
 
     public function __construct($job_id = 0, $row_id = 0, $collection_name = "") {
         $this->jobId = $job_id;

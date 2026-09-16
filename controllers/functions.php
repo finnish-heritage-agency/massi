@@ -39,7 +39,7 @@ function writeLog($text, $moodi = null, $error = true) {
         $moodi = "success_$moodi";
     }
     if ($moodi == null) {
-        $text = utf8_decode($text);
+        $text = mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
         $lokifile = "debug-log";
     } else {
         $lokifile = $moodi . "-log";
@@ -170,7 +170,7 @@ function checkPost($s) {
     if ($enc == 'UTF-8') {
         return htmlentities($s);
     } else {
-        return htmlentities(utf8_encode($s));
+        return htmlentities(mb_convert_encoding($s, 'UTF-8', 'ISO-8859-1'));
     }
 }
 

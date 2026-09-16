@@ -260,6 +260,7 @@ class Collection {
                 return -2;
             }
             $tmp = $stmt->fetchAll();
+            $array = [];
 
             foreach ($tmp as $row) {
                 $tmp2 = isReady($row["lista_id"]);
@@ -307,6 +308,7 @@ class Collection {
                 return -2;
             }
             $tmp = $stmt->fetchAll();
+            $array = [];
 
             foreach ($tmp as $row) {
                 $tmp2 = isReady($row["lista_id"]);

@@ -38,6 +38,7 @@ class Artist {
                 return -2;
             }
             $tmp = $stmt->fetchAll();
+            $array = [];
             foreach ($tmp as $row) {
                 //$array[] = array($artist = new Artist($row["tekija_id"], $row["teksti"], $row["sisainen_id"], $row["aktiivinen"])); //NOUH
                 $array[] = array(//Licenses function has the sames
