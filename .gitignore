@@ -1,0 +1,39 @@
+nbproject/
+museovirasto.php
+testiMuseo.php
+testiMuseo*.php
+massadigitointi-*.php
+logs/*
+rest/logs/*
+
+# Composer dependencies
+vendor/
+*/vendor/
+
+# IDE and OS
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.local
+
+# Zip files
+*.zip
+
+# crt files
+*.crt
+
+# log files
+*.log
+
+# database files
+database/
+*.sql
+
+# temporary files
+tmp/
+
