@@ -1,15 +1,15 @@
 Options -Indexes
+
 RewriteEngine On
-#RewriteCond %{SERVER_PORT} 80
-#RewriteRule ^(.*)$ https://dragracing.softrepo.fi/$1 [R,L]
 
+# Estä .git kokonaan
+RewriteRule ^\.git - [F,L]
+
+# Sivureitit
 RewriteRule ^sivu/([^/]*)/$ /index.php?page=$1
-#handling collections
-RewriteRule ^sivu/([^/]*)/([^/]*)$ /index.php?page=$1&more=$2 
-RewriteRule ^sivu/([^/]*)/([^/]*)/$ /index.php?page=$1&id=$2 
-#changin collection status
-RewriteRule ^sivu/([^/]*)/([^/]*)/([^/]*)$ /index.php?page=$1&id=$2&rivi_id=$3 
-
+RewriteRule ^sivu/([^/]*)/([^/]*)$ /index.php?page=$1&more=$2
+RewriteRule ^sivu/([^/]*)/([^/]*)/$ /index.php?page=$1&id=$2
+RewriteRule ^sivu/([^/]*)/([^/]*)/([^/]*)$ /index.php?page=$1&id=$2&rivi_id=$3
 
 ## EXPIRES CACHING ##
 <IfModule mod_expires.c>
