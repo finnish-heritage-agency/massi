@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build:
@@ -16,8 +14,32 @@ services:
       - php-sessions:/var/lib/php/sessions
     working_dir: /var/www/html
     command: ["sh", "-c", "chown -R www-data:www-data /var/lib/php/sessions && apache2-foreground"]
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: massi-db
+    command:
+      - --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    environment:
+      # Keep in sync with DB_* in .env / .env.example
+      MYSQL_ROOT_PASSWORD: adminer
+      MYSQL_DATABASE: digitointi
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padminer"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     restart: always
 
 # THIS MUST BE AT THE BOTTOM AND NOT INDENTED
 volumes:
   php-sessions:
+  mysql-data:
