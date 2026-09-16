@@ -116,4 +116,27 @@ foreach ($rivit as $rivi) {
 
     $text = ($rivi['finna'] == 1) ? "Kyllä" : "Ei";
 
-   
+    $sorting = sortDate(
+        date("d.m.Y H:i:s", strtotime($rivi['paivays']))
+    );
+
+    $message = " (" . $sorting["week_day"] . ") " . $sorting["day"];
+
+    $data[] = [
+        "lista_id" => $rivi['lista_id'],
+        "otsikko" => $rivi['otsikko'],
+        "paivays" => $message,
+        "finna" => $text,
+        "maara" => getCompletedRows($rivi["lista_id"]) . "/" . $rivi['maara'],
+        "valmis" => isReady($rivi["lista_id"]),
+    ];
+}
+
+$response = [
+    "draw" => $draw,
+    "iTotalRecords" => $totalRecords,
+    "iTotalDisplayRecords" => $totalRecordwithFilter,
+    "aaData" => $data
+];
+
+echo json_encode($response);
