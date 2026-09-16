@@ -6,8 +6,7 @@ if (!defined('REST')) {
 
 require_once REST . 'rest_settings.php';
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 $db = getConnect();
 
@@ -24,10 +23,6 @@ $searchQuery2 = "";
 $searchArray = [];
 $data = [];
 
-/*
- * Datatables lähettää sarakenimen tässä.
- * Oletuksena lista_id.
- */
 $columnName = $_POST['columns'][$columnIndex]['data'] ?? 'lista_id';
 
 $allowedColumns = [
@@ -60,9 +55,6 @@ if ($searchValue !== '') {
     ];
 }
 
-/*
- * Kokonaismäärä
- */
 $stmt = $db->prepare("
     SELECT COUNT(*) AS allcount
     FROM listat
@@ -72,9 +64,6 @@ $stmt->execute();
 $records = $stmt->fetch(PDO::FETCH_ASSOC);
 $totalRecords = $records['allcount'];
 
-/*
- * Suodatettu määrä
- */
 $stmt = $db->prepare("
     SELECT COUNT(*) AS allcount
     FROM listat
@@ -86,9 +75,6 @@ $stmt->execute($searchArray);
 $records = $stmt->fetch(PDO::FETCH_ASSOC);
 $totalRecordwithFilter = $records['allcount'];
 
-/*
- * Varsinaiset rivit
- */
 $sql = "
 SELECT
     L.*,
