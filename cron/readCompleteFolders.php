@@ -35,6 +35,9 @@ if ($x != "") {
     die();
 }
 $pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep' | wc -l");
+// Vanhassa palvelinympäristössä yksi ajo näkyi yhtenä prosessina.
+// Podman-kontissa sama ajo voi näkyä kahtena osumana (sh + php),
+// joten käytetään rajaa >2 eikä >1.
 if ($pids > 2) {
     //echo shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep'");
     echo "readCompleteFolders.php on jo käynnissä. $pids ";
