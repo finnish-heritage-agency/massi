@@ -22,7 +22,7 @@ if (!file_exists(ROOT . $config_file . ".php")) {
 $version = "0.2"; //If needs to reload css files...
 $virtuaali = false; //Vaikuttaa nfs levyyn
 
-if (!isset($_SERVER["SHELL"])) { //if is not cron job...
+if (php_sapi_name() !== 'cli') { // selainkäyttö
     define("PDF_ACCESS_URL", $_SERVER["SERVER_NAME"]); //Mikä url on hyväksytty
     if (!defined('WEBROOT')) {
         define('WEBROOT', $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"]);
