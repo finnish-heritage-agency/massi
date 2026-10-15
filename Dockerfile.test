@@ -25,6 +25,12 @@ RUN docker-php-ext-install \
     zip \
     gettext
 
+# Timezone (handles summer/winter time automatically)
+ENV TZ=Europe/Helsinki
+
+RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime && \
+    echo Europe/Helsinki > /etc/timezone
+
 # Apache modules
 RUN a2enmod rewrite
 
@@ -50,14 +56,20 @@ fi
 
 # Ohje-PDF:n oikeudet
 if [ -f /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf ]; then
-    chown www-data:www-data /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
     chmod 644 /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
 fi
 
 # settings.php:n oikeudet
 if [ -f /var/www/html/settings.php ]; then
-    chown www-data:www-data /var/www/html/settings.php
     chmod 644 /var/www/html/settings.php
 fi
 
-exec 
+# PHP timezone
+echo "date.timezone=Europe/Helsinki" > /usr/local/etc/php/conf.d/timezone.ini
+
+exec apache2-foreground
+EOF
+
+RUN chmod +x /usr/local/bin/docker-entrypoint-massi.sh
+
+CMD ["/usr/local/bin/docker-entrypoint-massi.sh"]
