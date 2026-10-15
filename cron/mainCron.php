@@ -3,7 +3,7 @@
 /**
  * Tällä käskytetään muita croneja
  */
-if (!isset($_SERVER["SHELL"])) { //Via browser
+if (php_sapi_name() !== 'cli') {
     header("HTTP/1.0 403 Forbidden");
     die();
 }
