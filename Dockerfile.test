@@ -54,9 +54,10 @@ if [ -f /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf ]; then
     chmod 644 /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
 fi
 
-exec apache2-foreground
-EOF
+# settings.php:n oikeudet
+if [ -f /var/www/html/settings.php ]; then
+    chown www-data:www-data /var/www/html/settings.php
+    chmod 644 /var/www/html/settings.php
+fi
 
-RUN chmod +x /usr/local/bin/docker-entrypoint-massi.sh
-
-CMD ["/usr/local/bin/docker-entrypoint-massi.sh"]
+exec 
