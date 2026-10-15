@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
     libgettextpo-dev \
-    zip
+    zip \
+ && rm -rf /var/lib/apt/lists/*
 
 # Configure GD
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
@@ -35,3 +36,21 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
+
+# Startup script
+RUN cat > /usr/local/bin/docker-entrypoint-massi.sh <<'EOF'
+#!/bin/sh
+
+# mPDF temp directory permissions
+if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
+    mkdir -p /var/www/html/vendor/mpdf/mpdf/tmp/mpdf
+    chown -R www-data:www-data /var/www/html/vendor/mpdf/mpdf/tmp
+    chmod -R 775 /var/www/html/vendor/mpdf/mpdf/tmp
+fi
+
+exec apache2-foreground
+EOF
+
+RUN chmod +x /usr/local/bin/docker-entrypoint-massi.sh
+
+CMD ["/usr/local/bin/docker-entrypoint-massi.sh"]
