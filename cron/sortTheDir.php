@@ -17,13 +17,12 @@ if ($x != ROOT_USER) {
     die();
 }
 $saanto = -1;
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "sortTheDir.php' | grep -v 'grep' | wc -l");
-// Vanhassa palvelinympäristössä yksi ajo näkyi yhtenä prosessina.
-// Podman-kontissa sama ajo voi näkyä kahtena osumana (sh + php),
-// joten käytetään rajaa >2 eikä >1.
-if ($pids > 2) {
-    //echo shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep'");
-    echo "sortTheDir.php on jo käynnissä. $pids ";
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/sortTheDir.lock', 'c');
+
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+    echo "sortTheDir.php on jo käynnissä.";
     die();
 }
 $folders = array_slice(array_filter(scandir(PICTURE_FOLDER)), 2);

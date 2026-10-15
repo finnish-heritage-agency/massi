@@ -15,12 +15,12 @@ if ($x != ROOT_USER) {
     die();
 }
 
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "changeThumbnailBoo.php' | grep -v 'grep' | wc -l");
-// Vanhassa palvelinympäristössä yksi ajo näkyi yhtenä prosessina.
-// Podman-kontissa sama ajo voi näkyä kahtena osumana (sh + php),
-// joten käytetään rajaa >2 eikä >1.
-if ($pids > 2) {
-    echo "changeThumbnailBoo.php on jo käynnissä. $pids";
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/changeThumbnailBoo.lock', 'c');
+
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+    echo "changeThumbnailBoo.php on jo käynnissä.";
     die();
 }
 
