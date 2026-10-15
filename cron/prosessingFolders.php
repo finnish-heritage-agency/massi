@@ -13,7 +13,7 @@ if ($x != ROOT_USER) {
 }
 
 $pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "prosessingFolders.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
+if ($pids > 2) {
     echo "prosessingFolders.php on jo käynnissä. $pids";
     die();
 }

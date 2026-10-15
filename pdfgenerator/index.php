@@ -25,7 +25,7 @@ if (count($_POST) > 0) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $formvars);
     $html = curl_exec($ch);
     curl_close($ch);
-} elseif (ini_get('allow_url_fopen')) {
+} elseif (false) {
     $html = file_get_contents($url);
 } else {
     $ch = curl_init($url);

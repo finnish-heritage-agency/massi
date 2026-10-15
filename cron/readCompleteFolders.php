@@ -35,7 +35,7 @@ if ($x != "") {
     die();
 }
 $pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
+if ($pids > 2) {
     //echo shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep'");
     echo "readCompleteFolders.php on jo käynnissä. $pids ";
     die();

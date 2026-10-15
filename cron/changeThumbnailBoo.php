@@ -16,7 +16,7 @@ if ($x != ROOT_USER) {
 }
 
 $pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "changeThumbnailBoo.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
+if ($pids > 2) {
     echo "changeThumbnailBoo.php on jo käynnissä. $pids";
     die();
 }

@@ -18,7 +18,7 @@ if ($x != ROOT_USER) {
 }
 $saanto = -1;
 $pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "sortTheDir.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
+if ($pids > 2) {
     //echo shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep'");
     echo "sortTheDir.php on jo käynnissä. $pids ";
     die();
