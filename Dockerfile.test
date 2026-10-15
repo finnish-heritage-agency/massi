@@ -48,6 +48,12 @@ if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
     chmod -R 775 /var/www/html/vendor/mpdf/mpdf/tmp
 fi
 
+# Ohje-PDF:n oikeudet
+if [ -f /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf ]; then
+    chown www-data:www-data /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
+    chmod 644 /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
+fi
+
 exec apache2-foreground
 EOF
 
