@@ -27,6 +27,9 @@ vendor/
 # crt files
 *.crt
 
+# cer files
+*.cer
+
 # log files
 *.log
 
