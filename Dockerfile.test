@@ -34,6 +34,11 @@ ENV TZ=Europe/Helsinki
 RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime && \
     echo Europe/Helsinki > /etc/timezone
 
+# Valtion root CA
+COPY Valtion_Root_CA.cer /usr/local/share/ca-certificates/Valtion_Root_CA.crt
+
+RUN update-ca-certificates
+
 # Apache modules
 RUN a2enmod rewrite
 
