@@ -32,7 +32,7 @@ function lapTime() {
  * @return type
  */
 function writeLog($text, $moodi = null, $error = true) {
-    if (strlen($text) < 5) {
+    if (!is_string($text) || strlen($text) < 5) {
         return null;
     }
     if (SHOW_SUCCESS_LOGS == false && $error == false) {
