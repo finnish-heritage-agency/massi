@@ -57,15 +57,10 @@ if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
     chmod -R 775 /var/www/html/vendor/mpdf/mpdf/tmp
 fi
 
-# Ohje-PDF:n oikeudet
-if [ -f /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf ]; then
-    chmod 644 /var/www/html/docs/Massadigitointisovelluksen_pikaohje_2024.pdf
-fi
-
-# settings.php:n oikeudet
-if [ -f /var/www/html/settings.php ]; then
-    chmod 644 /var/www/html/settings.php
-fi
+# Korjaa sovelluksen tiedostojen oikeudet
+find /var/www/html -type d -exec chmod 755 {} \;
+find /var/www/html -name "*.php" -exec chmod 644 {} \;
+find /var/www/html -name "*.pdf" -exec chmod 644 {} \;
 
 # PHP timezone
 echo "date.timezone=Europe/Helsinki" > /usr/local/etc/php/conf.d/timezone.ini
