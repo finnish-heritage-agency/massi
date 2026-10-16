@@ -28,13 +28,17 @@ RUN docker-php-ext-install \
     gettext \
     exif
 
-# Timezone (handles summer/winter time automatically)
+# Temporary directories
+RUN mkdir -p /var/www/tmp && \
+    chmod 777 /var/www/tmp
+
+# Timezone
 ENV TZ=Europe/Helsinki
 
 RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime && \
     echo Europe/Helsinki > /etc/timezone
 
-# Valtion root CA
+# Valtion Root CA
 COPY Valtion_Root_CA.cer /usr/local/share/ca-certificates/Valtion_Root_CA.crt
 
 RUN update-ca-certificates
@@ -43,8 +47,8 @@ RUN update-ca-certificates
 RUN a2enmod rewrite
 
 # Apache configuration
-RUN echo "HostnameLookups Off" >> /etc/apache2/apache2.conf
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN echo "HostnameLookups Off" >> /etc/apache2/apache2.conf && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -55,6 +59,10 @@ WORKDIR /var/www/html
 RUN cat > /usr/local/bin/docker-entrypoint-massi.sh <<'EOF'
 #!/bin/sh
 
+# MuseumPlus session/cache directory
+mkdir -p /var/www/tmp
+chmod 777 /var/www/tmp
+
 # mPDF temp directory permissions
 if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
     mkdir -p /var/www/html/vendor/mpdf/mpdf/tmp/mpdf
@@ -62,7 +70,7 @@ if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
     chmod -R 775 /var/www/html/vendor/mpdf/mpdf/tmp
 fi
 
-# Korjaa sovelluksen tiedostojen oikeudet
+# Application file permissions
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html -name "*.php" -exec chmod 644 {} \;
 find /var/www/html -name "*.pdf" -exec chmod 644 {} \;
