@@ -15,10 +15,11 @@ if ($x != ROOT_USER) {
 //    die();
 }
 $saanto = -1;
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "moveTo.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
-    //echo shell_exec("ps ax | grep 'php " . CRON_FOLDER . "readCompleteFolders.php' | grep -v 'grep'");
-    echo "moveTo.php on jo käynnissä. $pids ";
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/moveTo.lock', 'c');
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+    echo "moveTo.php on jo käynnissä.";
     die();
 }
 

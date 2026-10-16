@@ -12,9 +12,10 @@ if (file_exists(__DIR__ . "/../settings.php")) {
 } else {
     die(":/ \n");
 }
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep' | wc -l");
-//$pids = shell_exec("ps ax | grep 'php " . CRON_FOLDER . "mainCron.php' | grep -v 'grep'");
-if ($pids > 1) {
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/mainCron.lock', 'c');
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
     die("maincron käynnissä");
 }
 

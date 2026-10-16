@@ -4,7 +4,7 @@
  * Using from frontend and backend...
  */
 set_time_limit(0); // to infinity for
-DEFINE("UPDATED", "15.10.2026");
+DEFINE("UPDATED", "16.10.2026");
 DEFINE("OLD_COLLECTIONS", "2022-05-13");
 date_default_timezone_set('Europe/Helsinki');
 if (!defined('ROOT')) {
@@ -22,15 +22,24 @@ if (!file_exists(ROOT . $config_file . ".php")) {
 $version = "0.2"; //If needs to reload css files...
 $virtuaali = false; //Vaikuttaa nfs levyyn
 
-if (php_sapi_name() !== 'cli') { // selainkäyttö
-    define("PDF_ACCESS_URL", $_SERVER["SERVER_NAME"]); //Mikä url on hyväksytty
+// Cron ja muut CLI-ajot eivät täytä SERVER_NAME:ä. php-cgi / fpm ilman
+// HTTP-pyyntöä ei sekään ole selainkäyttöä, vaikka SAPI ei ole "cli".
+$isWebRequest = PHP_SAPI !== 'cli' && isset($_SERVER['REQUEST_METHOD']);
+if ($isWebRequest) { // selainkäyttö
+    $serverName = $_SERVER['SERVER_NAME'] ?? $_SERVER['HTTP_HOST'] ?? '';
+    define("PDF_ACCESS_URL", $serverName); //Mikä url on hyväksytty
     if (!defined('WEBROOT')) {
-        define('WEBROOT', $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"]);
+        if (isset($_SERVER['REQUEST_SCHEME'])) {
+            $scheme = $_SERVER['REQUEST_SCHEME'];
+        } elseif (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            $scheme = 'https';
+        } else {
+            $scheme = 'http';
+        }
+        define('WEBROOT', $scheme . "://" . $serverName);
     }
-} else {
-    if (HTTPS_ONLY == true) {
-        header("location: https://" . $_SERVER['HTTP_HOST'] . "" . $_SERVER['REQUEST_URI']);
-    }
+} elseif (defined('HTTPS_ONLY') && HTTPS_ONLY == true && isset($_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])) {
+    header("location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 }
 
 require_once(ROOT . 'controllers/functions.php');
