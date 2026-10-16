@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libgettextpo-dev \
     zip \
- && rm -rf /var/lib/apt/lists/*
+    libimage-exiftool-perl \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /usr/bin/exiftool /usr/local/bin/exiftool
 
 # Configure GD
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
@@ -23,7 +25,8 @@ RUN docker-php-ext-install \
     intl \
     pdo_mysql \
     zip \
-    gettext
+    gettext \
+    exif
 
 # Timezone (handles summer/winter time automatically)
 ENV TZ=Europe/Helsinki
