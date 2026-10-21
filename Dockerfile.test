@@ -59,9 +59,44 @@ WORKDIR /var/www/html
 RUN cat > /usr/local/bin/docker-entrypoint-massi.sh <<'EOF'
 #!/bin/sh
 
+set -e
+
 # MuseumPlus session/cache directory
 mkdir -p /var/www/tmp
 chmod 777 /var/www/tmp
+
+# Odota että CIFS-jako on saatavilla
+echo "Waiting for /kuvat mount..."
+
+COUNTER=0
+MAX_WAIT=300
+
+while [ ! -d /kuvat ]
+do
+    echo "/kuvat not available yet"
+    sleep 5
+    COUNTER=$((COUNTER + 5))
+
+    if [ "$COUNTER" -ge "$MAX_WAIT" ]; then
+        echo "ERROR: /kuvat not available after ${MAX_WAIT}s"
+        exit 1
+    fi
+done
+
+# Varmista että mountti sisältää muutakin kuin tyhjän hakemiston
+while [ "$(find /kuvat -mindepth 1 2>/dev/null | head -1 | wc -l)" -eq 0 ]
+do
+    echo "/kuvat exists but appears empty, waiting..."
+    sleep 5
+    COUNTER=$((COUNTER + 5))
+
+    if [ "$COUNTER" -ge "$MAX_WAIT" ]; then
+        echo "ERROR: /kuvat appears empty after ${MAX_WAIT}s"
+        exit 1
+    fi
+done
+
+echo "/kuvat available"
 
 # mPDF temp directory permissions
 if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
