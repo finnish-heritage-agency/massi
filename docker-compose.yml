@@ -5,7 +5,7 @@ services:
     image: massi-php83
     container_name: massi-app
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     env_file:
       - .env
     volumes:
@@ -14,24 +14,26 @@ services:
     working_dir: /var/www/html
     command: ["sh", "-c", "chown -R www-data:www-data /var/lib/php/sessions && apache2-foreground"]
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
 
   db:
-    image: mysql:8.0
+    image: docker.io/library/mysql:8.0
     container_name: massi-db
     command:
       - --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     environment:
       # Keep in sync with DB_* in .env / .env.example
-      MYSQL_ROOT_PASSWORD: adminer
-      MYSQL_DATABASE: digitointi
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-adminer}
+      MYSQL_DATABASE: ${DB_NAME:-digitointi}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./tietokanta.sql:/docker-entrypoint-initdb.d/01-massi.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padminer"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\""]
       interval: 5s
       timeout: 5s
       retries: 20
