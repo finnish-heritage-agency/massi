@@ -4,7 +4,7 @@
  * Using from frontend and backend...
  */
 set_time_limit(0); // to infinity for
-DEFINE("UPDATED", "16.10.2026");
+DEFINE("UPDATED", "22.10.2026");
 DEFINE("OLD_COLLECTIONS", "2022-05-13");
 date_default_timezone_set('Europe/Helsinki');
 if (!defined('ROOT')) {
