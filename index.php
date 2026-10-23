@@ -25,7 +25,7 @@ if (file_exists(ROOT . "kirjautuminen/index.php")) {
             ];
             $user = $_SESSION["user"];
         } else {
-            header("location: " . WEBROOT . "kirjautuminen/index.php");
+            header("location: " . WEBROOT . "/kirjautuminen/index.php");
             die();
         }
     } else {
