@@ -114,7 +114,7 @@ find /var/www/html -name "*.pdf" -exec chmod 644 {} \;
 echo "date.timezone=Europe/Helsinki" > /usr/local/etc/php/conf.d/timezone.ini
 
 # PHP memory limit
-echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory.ini
+echo "memory_limit=1024M" > /usr/local/etc/php/conf.d/memory.ini
 
 exec apache2-foreground
 EOF
