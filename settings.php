@@ -1,23 +1,33 @@
 <?php
 
-/** SOFTREPO 1.7.2020
+/**
  * Using from frontend and backend...
  */
 set_time_limit(0); // to infinity for
-DEFINE("UPDATED", "22.10.2026");
+DEFINE("UPDATED", "23.10.2026");
 DEFINE("OLD_COLLECTIONS", "2022-05-13");
 date_default_timezone_set('Europe/Helsinki');
 if (!defined('ROOT')) {
     define('ROOT', dirname(__FILE__) . '/');
 }
 
-$config = shell_exec("hostname");
-$config_file = preg_replace('/\s+/', '', $config);
-if (!file_exists(ROOT . $config_file . ".php")) {
-    require_once ROOT . "testiMuseo.php";
-    $test = true;
+$configFile = $_ENV['APP_CONFIG'] ?? '';
+
+if (
+    $configFile !== '' &&
+    file_exists(ROOT . $configFile . '.php')
+) {
+    require_once ROOT . $configFile . '.php';
 } else {
-    require_once ROOT . "$config_file.php";
+    $config = shell_exec("hostname");
+    $config_file = preg_replace('/\s+/', '', $config);
+
+    if (!file_exists(ROOT . $config_file . ".php")) {
+        require_once ROOT . "testiMuseo.php";
+        $test = true;
+    } else {
+        require_once ROOT . $config_file . ".php";
+    }
 }
 $version = "0.2"; //If needs to reload css files...
 $virtuaali = false; //Vaikuttaa nfs levyyn
