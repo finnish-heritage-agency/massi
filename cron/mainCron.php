@@ -25,7 +25,7 @@ if (file_exists(SOFTWARE_BREAK) || $ok != 1) {
     if (!file_exists(SOFTWARE_BREAK)) {
         touch(SOFTWARE_BREAK); //Tulee katko näkyviin myös edustapalvelulle ja tätä kautta myöskin kaikki muut siirrot pysähtyvät
         shell_exec("echo $ok > " . SOFTWARE_BREAK);
-        shell_exec("chown apache. " . SOFTWARE_BREAK);
+        // shell_exec("chown apache. " . SOFTWARE_BREAK);
     }
     die("katko. Syy: $ok");
 }
