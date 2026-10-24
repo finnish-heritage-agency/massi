@@ -7,6 +7,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+$cookie = session_name() . '=' . session_id();
+
+/*
+ * Vapauta session lukko ennen cURL-kutsua,
+ * jotta print-sivu voi käyttää samaa sessiota.
+ */
+session_write_close();
+
 showErrors(0);
 
 $mpdf = new \Mpdf\Mpdf();
@@ -27,7 +35,7 @@ if (count($_POST) > 0) {
     curl_setopt(
         $ch,
         CURLOPT_COOKIE,
-        session_name() . '=' . session_id()
+        $cookie
     );
 
     foreach ($_POST as $name => $post) {
@@ -53,7 +61,7 @@ if (count($_POST) > 0) {
     curl_setopt(
         $ch,
         CURLOPT_COOKIE,
-        session_name() . '=' . session_id()
+        $cookie
     );
 
     $html = curl_exec($ch);
