@@ -10,27 +10,11 @@ if (!defined('ROOT')) {
 }
 require_once ROOT . "settings.php";
 
-$isPrintPage =
-    isset($_GET["page"]) &&
-    $_GET["page"] === "era" &&
-    isset($_GET["rivi_id"]) &&
-    $_GET["rivi_id"] === "print";
-
-
 if (file_exists(ROOT . "kirjautuminen/index.php")) {
 
     if (!isset($_SESSION["user"])) {
 
-        if ($isPrintPage) {
-
-            $_SESSION["user"] = [
-                'name' => 'PDF Generator',
-                'email' => 'pdf@massi.local'
-            ];
-
-            $user = $_SESSION["user"];
-
-        } elseif (
+        if (
             defined('TEST_SERVER') &&
             TEST_SERVER === true &&
             getenv('APP_ENV') === 'local'
@@ -56,6 +40,7 @@ if (file_exists(ROOT . "kirjautuminen/index.php")) {
         $user = $_SESSION["user"];
     }
 }
+
 require(ROOT . 'controllers/locales.php'); //Always the last
 global $version;
 $hakulause = null;
