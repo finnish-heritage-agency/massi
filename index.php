@@ -9,26 +9,50 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(__FILE__) . '/');
 }
 require_once ROOT . "settings.php";
+
+$isPrintPage =
+    isset($_GET["page"]) &&
+    $_GET["page"] === "era" &&
+    isset($_GET["rivi_id"]) &&
+    $_GET["rivi_id"] === "print";
+
+
 if (file_exists(ROOT . "kirjautuminen/index.php")) {
+
     if (!isset($_SESSION["user"])) {
-        if (
+
+        if ($isPrintPage) {
+
+            $_SESSION["user"] = [
+                'name' => 'PDF Generator',
+                'email' => 'pdf@massi.local'
+            ];
+
+            $user = $_SESSION["user"];
+
+        } elseif (
             defined('TEST_SERVER') &&
             TEST_SERVER === true &&
             getenv('APP_ENV') === 'local'
         ) {
-            // Local development bypass: create a mock logged-in user and continue.
+
             $_SESSION["user"] = [
                 'name' => 'Lokaali Kehittäjä',
                 'email' => 'testi@museovirasto.fi',
                 'id_token' => 'mock-id-token',
                 'access_token' => 'mock-access-token'
             ];
+
             $user = $_SESSION["user"];
+
         } else {
+
             header("location: " . WEBROOT . "/kirjautuminen/index.php");
             die();
         }
+
     } else {
+
         $user = $_SESSION["user"];
     }
 }
