@@ -124,7 +124,12 @@ $links = array(
 
 $bread = breadCrumb($links, $collection->otsikko, $more_title);
 $title = $bread . " <span class='text-right'>" . date("d.m.Y H:i:s", strtotime($collection->paivays)) . " | " . $collection->eran_tallentaja . "</span><br />";
+
 $url = WEBROOT . $_SERVER["REQUEST_URI"];
+if (substr($url, -5) !== 'print') {
+    $url .= 'print';
+}
+
 $message .= "<div class='row'>\n";
 $message .= "<div class='col-md-4'>";
 $message .= "<h4 class='no_pdf'>Julkaistaanko Finnassa: ";
@@ -157,7 +162,7 @@ $message .= "<div class='col-md-8'>";
 if ($virheita > 0) {
     $message .= "<a href='" . WEBROOT . "/sivu/era/" . $_GET["id"] . "/era_uudelleen_ajoon' class='text-right no_pdf text-danger'><i class='fa fa-recycle' aria-hidden='true'></i> " . text("restart the failed ones") . " ($virheita kpl)</a><br />";
 }
-$message .= "<a href='" . WEBROOT . "/pdfgenerator/index.php?url=" . $url . "print' class='text-right no_pdf' target='_blank'><i class='fa fa-print' aria-hidden='true'></i> " . text("print") . "</a>";
+$message .= "<a href='" . WEBROOT . "/pdfgenerator/index.php?url=" . urlencode($url) . "' class='text-right no_pdf' target='_blank'><i class='fa fa-print' aria-hidden='true'></i> " . text("print") . "</a>";
 
 if ($waiting == true) {
     $content = makeEditCollection($tmp[0]->finna, $tmp[0]->tekija_id, $tmp[0]->sisainen_oikeus, $tmp[0]->sisainen_tyyppi, $collection->lista_id);
