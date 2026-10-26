@@ -7,7 +7,8 @@ require_once REST . 'rest_settings.php';
 
 $museum = new Auth();
 $museum->login();
-$message = $config_file;
+// $message = $config_file;
+$message = "";
 
 if ($museum->getLoginStatus() > 0 && $museum->getLoginStatus() != "") {
     $message = "OK";
