@@ -16,7 +16,7 @@ if (file_exists(__DIR__ . "/../settings.php")) {
 // Podman-kontissa yksi ajo näkyy useana prosessina.
 $lock = fopen('/tmp/mainCron.lock', 'c');
 if (!flock($lock, LOCK_EX | LOCK_NB)) {
-    die("maincron käynnissä");
+    exit;
 }
 
 $ok = callRest("POST", "/rest/checkMplusAttempts.php", array("check" => 1), true);
@@ -25,7 +25,7 @@ if (file_exists(SOFTWARE_BREAK) || $ok != 1) {
     if (!file_exists(SOFTWARE_BREAK)) {
         touch(SOFTWARE_BREAK); //Tulee katko näkyviin myös edustapalvelulle ja tätä kautta myöskin kaikki muut siirrot pysähtyvät
         shell_exec("echo $ok > " . SOFTWARE_BREAK);
-        // shell_exec("chown apache. " . SOFTWARE_BREAK);
+        shell_exec("chown apache. " . SOFTWARE_BREAK);
     }
     die("katko. Syy: $ok");
 }
