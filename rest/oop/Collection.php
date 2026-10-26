@@ -400,7 +400,7 @@ class Collection {
                 FROM listan_rivit LR
                 LEFT JOIN tyot T
                 ON LR.rivi_id = T.listan_rivi_id
-                WHERE LR.kokoelmatunnus = :lista LIMIT 1";
+                WHERE LR.kokoelmatunnus = :lista ORDER BY LR.rivi_id DESC LIMIT 1";
             if (!$stmt = $this->db->prepare($sql)) {
                 writeToLog("Cannot prepare stament: $sql");
                 return $sql;
