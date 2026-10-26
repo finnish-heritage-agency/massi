@@ -116,7 +116,12 @@ class JobStatus {
         $sql = "SELECT T.*, LR.kokoelmatunnus, LR.objektin_id
                 FROM tyot T
                 LEFT JOIN listan_rivit LR
-                ON LR.rivi_id = T.listan_rivi_id WHERE T." . $this->getPhase() . " = :status AND T.rivi_valmis = 0 $lisays LIMIT 10";
+                ON LR.rivi_id = T.listan_rivi_id
+                WHERE T." . $this->getPhase() . " = :status
+                AND T.rivi_valmis = 0
+                $lisays
+                ORDER BY T.tyo_id ASC
+                LIMIT 10";
         try {
             if (!$stmt = $this->db->prepare($sql)) {
                 writeToLog("Cannot prepare stament: $sql");
