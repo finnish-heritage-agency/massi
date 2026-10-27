@@ -16,6 +16,13 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/* \
  && ln -sf /usr/bin/exiftool /usr/local/bin/exiftool
 
+ # Locales
+RUN apt-get update && apt-get install -y \
+    locales \
+ && sed -i 's/^# *fi_FI.UTF-8 UTF-8/fi_FI.UTF-8 UTF-8/' /etc/locale.gen \
+ && locale-gen fi_FI.UTF-8 \
+ && update-locale LANG=fi_FI.UTF-8
+
 # Configure GD
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
@@ -34,9 +41,13 @@ RUN mkdir -p /var/www/tmp && \
 
 # Timezone
 ENV TZ=Europe/Helsinki
-
 RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime && \
     echo Europe/Helsinki > /etc/timezone
+
+# Locale
+ENV LANG=fi_FI.UTF-8
+ENV LANGUAGE=fi_FI:fi
+ENV LC_ALL=fi_FI.UTF-8
 
 # Valtion Root CA
 COPY Valtion_Root_CA.cer /usr/local/share/ca-certificates/Valtion_Root_CA.crt
