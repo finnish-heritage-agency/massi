@@ -3,7 +3,7 @@
 /* * 29.7.2020
  * Pistetty mukaan, mutta ei varsinaisesti käytetä missään
  */
-$lang = 'fi_FI';
+$lang = 'fi_FI.UTF-8';
 if (isset($_GET['lang']) && valid($_GET['lang'])) {
 // the locale can be changed through the query-string
     $lang = $_GET['lang'];    //you should sanitize this!
@@ -27,6 +27,9 @@ if (isset($_GET['lang']) && valid($_GET['lang'])) {
 
 // here we define the global system locale given the found language
 putenv("LANG=$lang");
+if (strpos($lang, '.UTF-8') === false) {
+    $lang .= '.UTF-8';
+}
 setlocale(LC_ALL, $lang);
 
 bindtextdomain('ui', './locales');
