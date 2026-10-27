@@ -440,41 +440,61 @@ class Collection {
 
     private function getListaId($kokoelmatunnus) {
         try {
-            $sql = "SELECT MAX(lista_id) FROM listan_rivit WHERE kokoelmatunnus = :tunnus AND valmis = 1";
+            $sql = "SELECT lista_id
+                    FROM listan_rivit
+                    WHERE kokoelmatunnus = :tunnus
+                    AND valmis IN (1,2)
+                    ORDER BY rivi_id DESC
+                    LIMIT 1";
+
             if (!$stmt = $this->db->prepare($sql)) {
                 writeToLog("Cannot prepare stament: $sql");
                 return -3;
             }
+
             $stmt->bindParam(":tunnus", $kokoelmatunnus);
+
             if (!$stmt->execute()) {
                 writeToLog("Cannot execute prepared statement for: $sql");
                 return -2;
             }
+
             $tmp = $stmt->fetchColumn();
         } catch (Exception $error) {
             writeToLog($error->getMessage());
             return -1;
         }
+
         return $tmp;
     }
 
     private function getObjectId($kokoelmatunnus) {
         try {
-            $sql = "SELECT objektin_id FROM listan_rivit WHERE kokoelmatunnus = :tunnus AND valmis = 1";
+            $sql = "SELECT objektin_id
+                    FROM listan_rivit
+                    WHERE kokoelmatunnus = :tunnus
+                    AND valmis IN (1,2)
+                    ORDER BY rivi_id DESC
+                    LIMIT 1";
+
             if (!$stmt = $this->db->prepare($sql)) {
                 writeToLog("Cannot prepare stament: $sql");
                 return -3;
             }
+
             $stmt->bindParam(":tunnus", $kokoelmatunnus);
+
             if (!$stmt->execute()) {
                 writeToLog("Cannot execute prepared statement for: $sql");
                 return -2;
             }
+
             $tmp = $stmt->fetchColumn();
         } catch (Exception $error) {
             writeToLog($error->getMessage());
             return -1;
         }
+
         return $tmp;
     }
 
