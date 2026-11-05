@@ -155,7 +155,7 @@ function htmlSidebar() {
     $msg .= "    <hr class='sidebar-divider d-none d-md-block'>\n";
     $msg .= "    <div class='sidebar-heading'>Ohjeet</div>\n";
     $msg .= "    <li class='nav-item link-padding'>\n";
-    $msg .= "        <a class='nav-link' title='Sovelluksen käyttöohje' target ='_blank' href='" . WEBROOT . "/Massadigitointisovelluksen_pikaohje_2026.pdf'>\n";
+    $msg .= "        <a class='nav-link' title='Sovelluksen käyttöohje' target ='_blank' href='" . WEBROOT . "/docs/Massadigitointisovelluksen_pikaohje_2026.pdf'>\n";
     $msg .= "            <i class='fas fa-fw fa-info'></i>\n";
     $msg .= "            <span>Käyttöohje</span></a>\n";
     $msg .= "    </li>\n";
