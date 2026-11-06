@@ -1,9 +1,5 @@
 The frontend has been used as a based by https://startbootstrap.com/themes/sb-admin-2/
 
-BarCodeGenerator needs Imagick
-- yum install perl-devel
-- Install sudo pecl install imagick
-
 download Exiftool https://exiftool.org/index.html (atm 12.01)
 cd /tar-folder
 yum install perl-devel
