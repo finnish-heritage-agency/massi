@@ -32,14 +32,14 @@ function lapTime() {
  * @return type
  */
 function writeLog($text, $moodi = null, $error = true) {
-    if (strlen($text) < 5) {
+    if (!is_string($text) || strlen($text) < 5) {
         return null;
     }
     if (SHOW_SUCCESS_LOGS == false && $error == false) {
         $moodi = "success_$moodi";
     }
     if ($moodi == null) {
-        $text = utf8_decode($text);
+        $text = mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
         $lokifile = "debug-log";
     } else {
         $lokifile = $moodi . "-log";
@@ -51,7 +51,8 @@ function writeLog($text, $moodi = null, $error = true) {
     if (!file_exists(LOGS)) {
         die("Folder " . LOGS . " does not exists");
     }
-    $lokifile = LOGS . $lokifile;
+    $paivays = date("dmY", time()) . "_"; //Tiedostolle aina päiväysnimi
+    $lokifile = LOGS . $paivays . $lokifile;
     $file_open = fopen($lokifile, "a+");
     if ($file_open) {
         fwrite($file_open, date("H:i:s", time()) . ". $text");
@@ -88,6 +89,7 @@ function debug($text) {
  */
 function callRest($method, $url, $data, $decode = false, $retry = false) {
     $curl = curl_init();
+    $url = REST_SERVICE . $url;
     curl_setopt($curl, CURLOPT_TIMEOUT, 3600);
     switch (strtoupper($method)) {
         case "POST":
@@ -168,7 +170,7 @@ function checkPost($s) {
     if ($enc == 'UTF-8') {
         return htmlentities($s);
     } else {
-        return htmlentities(utf8_encode($s));
+        return htmlentities(mb_convert_encoding($s, 'UTF-8', 'ISO-8859-1'));
     }
 }
 
@@ -258,7 +260,7 @@ function checkMPlusStatus() {
     if ($mplusMaintenance == 1) {
         return "M+ tuotannon uudelleenkäynnistys";
     }
-    $tmp = callRest("POST", WEBROOT . "/rest/checkMplusOnline.php", array("checkMPlus" => 1), true);
+    $tmp = callRest("POST", "/rest/checkMplusOnline.php", array("checkMPlus" => 1), true);
     if ($tmp != "OK") {
         sleep(600); //Rajapinta alhaalla, odotetaan 10 minuuttia
         return "M+ yhteysongelma: $tmp";

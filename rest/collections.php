@@ -109,8 +109,15 @@ if (isset($_POST["getCollections"])) {
         jsonError("Required arguments missing");
         return;
     }
-
-    //Alwasys adds +1
+} elseif (isset($_POST["removeCollection"])) {
+    if (isset($_POST["row_id"])) {
+        $row_id = checkPost($_POST["row_id"]);
+        $collection->setId($row_id);
+        $message = $collection->removeCollection();
+    }
+} elseif (isset($_POST["search_objects"])) {
+    $name = checkPost($_POST["search_objects"]);
+    $message = $collection->collectionsByObjectName($name);
 }
 
 echo(json_encode($message));

@@ -6,8 +6,11 @@
 require_once '../rest/rest_settings.php';
 
 $museum = new Auth();
-$museum->login();
+if ($museum->getSessionKey() != "") {
+    unlink($museum->getSessionKey());
+}
 
+$museum->login();
 if ($museum->getLoginStatus() > 0) {
     echo "ALL GOOD \n";
 } else {
@@ -16,10 +19,15 @@ if ($museum->getLoginStatus() > 0) {
     die();
 }
 echo "Removing sessionkey --> ";
-
 unlink($museum->getSessionKey());
 echo "removed --> \n";
 
+$museum->login();
+if ($museum->getLoginStatus() > 0) {
+    echo "ALL IS GOOD AGAIN\n";
+}
+
+echo "Session login";
 $museum->login();
 
 if ($museum->getLoginStatus() > 0) {

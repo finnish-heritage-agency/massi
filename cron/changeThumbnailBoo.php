@@ -15,15 +15,18 @@ if ($x != ROOT_USER) {
     die();
 }
 
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "changeThumbnailBoo.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
-    echo "changeThumbnailBoo.php on jo käynnissä. $pids";
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/changeThumbnailBoo.lock', 'c');
+
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+    echo "changeThumbnailBoo.php on jo käynnissä.";
     die();
 }
 
 $message = "";
 $tmp_data = array("phase" => "lahetys", "status" => 2);
-$tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $tmp_data, true); //haetaan semmoiset rivit, joissa tarkistus = 2 ja valmis = 0
+$tmp = callRest("POST", "/rest/getJobs.php", $tmp_data, true); //haetaan semmoiset rivit, joissa tarkistus = 2 ja valmis = 0
 
 if (count($tmp) > 0) {
     foreach ($tmp as $row) {
@@ -58,7 +61,7 @@ if (count($tmp) > 0) {
             $data->changeStatus(2, "nayttokuvat");
             $data->changeStatus(2, "rivi_valmis");
             $tmp_data = array("changeCollectionRowStatus" => $data->getRowId(), "progress" => 2);
-            $tmp = callRest("POST", WEBROOT . "/rest/editCollection.php", $tmp_data);
+            $tmp = callRest("POST", "/rest/editCollection.php", $tmp_data);
             $valmis = date("Y-m-d H:i:s", time());
             $data->changeStatus($valmis, "valmistunut");
             $message .= "##### VALMIS ##### \n";

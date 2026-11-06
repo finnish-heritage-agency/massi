@@ -18,9 +18,11 @@ $msg = "";
 if ($x != ROOT_USER) {
     die();
 }
-$pids = (int) shell_exec("ps ax | grep 'php " . CRON_FOLDER . "movePicturesTo.php' | grep -v 'grep' | wc -l");
-if ($pids > 1) {
-    echo "movePicturesTo.php on jo käynnissä. $pids ";
+// Käytetään flock-lukkoa ps/grep-pohjaisen PID-laskennan sijaan.
+// Podman-kontissa yksi ajo näkyy useana prosessina.
+$lock = fopen('/tmp/movePicturesTo.lock', 'c');
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+    echo "movePicturesTo.php on jo käynnissä.";
     die();
 }
 define("TRASH_FOLDER", "/kuvat/zzz_poistettavat/");
@@ -59,7 +61,7 @@ if (count($folders) > 0) {
         } else {
             $msg .= "Hakemisto on luotu: " . date("d.m.Y H:i", filectime($pictures . $folder)) . " --> ";
         }
-        $tmp = callRest("POST", WEBROOT . "/rest/canRemove.php", $data, true);
+        $tmp = callRest("POST", "/rest/canRemove.php", $data, true);
 
         if (!isset($tmp[0])) {
             $msg .= " **** hakemistoa ei löytynyt tietokannasta. **** \n";

@@ -9,7 +9,7 @@ if (isset($_GET["id"]) && $_GET["id"] == "refresh") {
     $message .= "<div id='all_jobs' style='width: 100%;></div>";
 } else {
     $data = array("jobs" => 1, "all" => true);
-    $tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+    $tmp = callRest("POST", "/rest/getJobs.php", $data, true);
 
     $message .= "<table class='table table-bordered text-center' id='dataTable' width='100%'>\n";
     $message .= "   <thead><tr><th>Päiväys</th><th>Digitointierä</th><th>Kokoelmatunnus</th><th>Tarkistus</th><th>Metatiedot</th><th>Lähetys</th><th>Valmis</th>";

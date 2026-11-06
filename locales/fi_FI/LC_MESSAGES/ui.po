@@ -120,3 +120,12 @@ msgstr "lisää uusi tekijä"
 
 msgid "author"
 msgstr "tekijä"
+
+msgid "restart the failed ones"
+msgstr "käynnistä epäonnistuneet uudelleen"
+
+msgid "whats new"
+msgstr "ajankohtaista"
+
+msgid "were in materials"
+msgstr "olemme mukana materiaalit"

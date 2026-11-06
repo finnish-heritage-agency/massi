@@ -90,28 +90,25 @@ class Auth {
             @unlink(TMP . $this->getTempFile());
         }
 
-        if (file_exists(TMP . $this->getTempFile())) {
+        if ($this->getTempFile() != "" && $this->getSessionKey() != "" && file_exists(TMP . $this->getTempFile()) && file_get_contents($this->getSessionKey()) != "") {
             shell_exec("touch " . TMP . $this->getTempFile()); // annetaan lisäaikaa
             $login_text = "Logged by session";
-            $endPoint = "/ria-ws/application/module/Object/1";
+            //$endPoint = "/ria-ws/application/module/Object/1"; //Ollut ennen pilvisiirtymistä
+            $endPoint = "/ria-ws/application/session";
+            $this->setSessionKey(TMP . $this->getTempFile());
+            $auth = 'user[' . M_USERNAME . ']:session[' . file_get_contents($this->getSessionKey()) . ']';
         } else {
             $login_text = "Logged by username & password";
             $endPoint = "/ria-ws/application/session";
+            $auth = "user[" . M_USERNAME . "]:password[" . M_PASSWORD . "]";
         }
         $ch = curl_init($this->getBaseUrl() . $endPoint);
+        curl_setopt($ch, CURLOPT_USERPWD, $auth);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml', $additionalHeaders));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-        if ($this->getSessionKey() != "" && file_exists(TMP . $this->getTempFile()) && file_get_contents($this->getSessionKey()) != "") {
-            $this->setSessionKey(TMP . $this->getTempFile());
-            $auth = 'user[' . M_USERNAME . ']:session[' . file_get_contents($this->getSessionKey()) . ']';
-            curl_setopt($ch, CURLOPT_USERPWD, $auth);
-        } else {
-            curl_setopt($ch, CURLOPT_USERPWD, "user[" . M_USERNAME . "]:password[" . M_PASSWORD . "]");
-        }
 
         $return = curl_exec($ch);
         $error = curl_error($ch);
@@ -129,6 +126,7 @@ class Auth {
             writeToLog($text);
             $status = -1;
         } else {
+            $status = -1;
             if (strpos($return, "Invalid") !== false) { //Wrong password
                 if (file_exists($this->getSessionKey())) {
                     unlink($this->getSessionKey());
@@ -149,6 +147,7 @@ class Auth {
                 $key = (string) $authXml->session->key; // avain talteen
                 if ($key != "") {
                     file_put_contents(TMP . $this->getTempFile(), $key);
+                    $this->setSessionKey(TMP . $this->getTempFile());
                 }
                 $status = 1;
                 $text = "OK: Logged in MuseomPLUS: $login_text ($status)";
@@ -166,5 +165,4 @@ class Auth {
         }
         return $status;
     }
-
 }

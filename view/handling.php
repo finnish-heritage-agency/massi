@@ -5,14 +5,14 @@
  */
 $message = submitPopup();
 $data = array("jobs" => 1);
-$tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+$tmp = callRest("POST", "/rest/getJobs.php", $data, true);
 if (isset($_GET["uudelleen_kasittelyyn"])) {
     $row_id = checkNumber($_GET["row_id"]);
     $phase = checkPost($_GET["phase"]);
     $status = checkNumber($_GET["status"]);
     $retry = 1;
     $data1 = array("row_id" => $row_id, "phase" => $phase, "status" => $status, "error" => 0, "retry" => $retry);
-    $ok = callRest("POST", WEBROOT . "/rest/changeProsessingStatus.php", $data1, true);
+    $ok = callRest("POST", "/rest/changeProsessingStatus.php", $data1, true);
     if ($ok == 1) {
         $_SESSION["tallennus_ok"] = "Erä laitettu uudelleenkäsittelyyn";
     } else {

@@ -44,7 +44,11 @@ if (isset($_POST["phase"])) {
         jsonError("Required arguments missing");
         return;
     }
-    $message = $jobs->getOneJob($lista_id);
+    if (isset($_POST["error"])) {
+        $message = $jobs->getOneJobByErrors($lista_id);
+    } else {
+        $message = $jobs->getOneJob($lista_id);
+    }
 } elseif (isset($_POST["checkCollectionId"])) {
     $message = $jobs->checkCollectionId($_POST["collection_id"]);
 } else {

@@ -1,12 +1,10 @@
 <?php
 
-$sended = callRest("POST", WEBROOT . "/rest/stats.php", array("getSended" => 2), true);
-$waiting = callRest("POST", WEBROOT . "/rest/stats.php", array("getSended" => 1), true);
-$error = callRest("POST", WEBROOT . "/rest/stats.php", array("getSended" => -1), true);
+$sended = callRest("POST", "/rest/stats.php", array("getSended" => 2), true);
+$waiting = callRest("POST", "/rest/stats.php", array("getSended" => 1), true);
+$error = callRest("POST", "/rest/stats.php", array("getSended" => -1), true);
 
-
-
-$message = "Sovelluksen ohjeet löytyvät osoitteesta: <pre>L:&#92;Projektit ja työryhmät&#92;Digitaalinen kulttuuriperintötieto&#92;2020&#92;Massadigitointi 2020&#92;Dokumentaatio</pre>";
+//$message = "Sovelluksen ohjeet löytyvät osoitteesta: <pre>L:&#92;Projektit ja työryhmät&#92;Digitaalinen kulttuuriperintötieto&#92;2020&#92;Massadigitointi 2020&#92;Dokumentaatio</pre>";
 $message .= "<table class='table table-bordered' width='100%'>\n";
 $message .= "   <thead><tr><th>Tapahtuma</th><th>Arvo</th></tr></thead>";
 $message .= "    <tbody>\n";
@@ -16,7 +14,7 @@ $message .= "       <tr class='text-danger'><td>Tiedostoja epäonnistunut</td><t
 $message .= "    </tbody>\n";
 $message .= "</table>\n";
 
-echo makeCard(12, text("ohjeet"), $message, false);
+echo makeCard(12, text("tilasto"), $message, false);
 /*
   echo "<div class='row col-md-12'>";
   echo makeStatBox("Tiedostoja lähetetty", $sended, "fa-file");

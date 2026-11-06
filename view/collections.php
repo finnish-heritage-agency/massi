@@ -5,7 +5,11 @@
 </script>
 <?php
 //Tämä latautuu liian hitaasti. Tehty rest-Jquerylla uusi 10.5.2022
+global $hakulause;
 $message = submitPopup();
+$data = array("getCollections" => 1, "limit" => 1000);
+$digitointierat = callRest("POST", "/rest/collections.php", $data, true);
+
 if (isset($_POST["add_collection"])) {
     if ($_POST["rows"] != "") {
         if (strlen($_POST["rows"]) > DATA_LENGTH) {
@@ -29,7 +33,7 @@ if (isset($_POST["add_collection"])) {
             "finna" => $finna,
         );
 
-        $tmp2 = callRest("POST", WEBROOT . "/rest/addNewCollection.php", $data);
+        $tmp2 = callRest("POST", "/rest/addNewCollection.php", $data);
         if (strpos($tmp2, "Tallennettu") !== false) {
             $_SESSION["tallennus_ok"] = json_decode($tmp2);
         } else {
@@ -39,6 +43,10 @@ if (isset($_POST["add_collection"])) {
         $_SESSION["tallennusvirhe"] = json_decode("Ei tallennettu yhtään riviä");
     }
     header("location: " . WEBROOT . "/sivu/erat/");
+} elseif ($hakulause != null) {
+    $objektinnimi = checkPost($hakulause);
+    $data = array("search_objects" => $objektinnimi);
+    $digitointierat = callRest("POST", "/rest/collections.php", $data, true);
 } elseif (isset($_GET["merkitse_valmiiksi"])) {
     if (is_numeric($_GET["valmis"])) {
         $lista_id = $_GET["valmis"];
@@ -46,15 +54,15 @@ if (isset($_POST["add_collection"])) {
     //sleep(2); //Jotta sweet alert tallennettu näkyisi hetken...
 
     $data = array("markAsReady" => 1, "row_id" => $lista_id);
-    $tmp = callRest("POST", WEBROOT . "/rest/collections.php", $data, true);
+    $tmp = callRest("POST", "/rest/collections.php", $data, true);
 
     if ($tmp > 0) {
         $data1 = array(
             "newJobsbyListaId" => 1,
             "lista_id" => $lista_id,
         );
-        $tmp2 = callRest("POST", WEBROOT . "/rest/addNewJob.php", $data1, true);
-        $message = "Digitointierä muutettu valmiiksi. Objekteja erässä: $tmp kpl.";
+        $tmp2 = callRest("POST", "/rest/addNewJob.php", $data1, true);
+        $message = "Digitointierä muutettu valmiiksi tiedostojen siirtoa varten. Objekteja erässä: $tmp kpl.";
         if ($tmp2 != 1) {
             $message .= "<br />Uusia töitä tallennettiin: $tmp2 kpl.";
         }
@@ -67,14 +75,16 @@ if (isset($_POST["add_collection"])) {
     } else {
         header("location: " . WEBROOT . "/sivu/erat/");
     }
+} elseif (isset($_GET["poista_era"])) {
+    if (is_numeric($_GET["poista"])) {
+        $lista_id = $_GET["poista"];
+        $data = array("removeCollection" => 1, "row_id" => $lista_id);
+        $tmp = callRest("POST", "/rest/collections.php", $data, true);
+        writeLog($tmp);
+        header("location: " . WEBROOT . "/sivu/erat/");
+    }
 }
-$data = array(
-    "getCollections" => 1,
-    "limit" => 1000,
-);
-//echo lapTime() . " ";
-$tmp = callRest("POST", WEBROOT . "/rest/collections.php", $data, true);
-//echo lapTime() . " ";
+
 $message .= "<table class='table table-bordered' id='dataTable' width='100%'>\n";
 $message .= "   <thead><tr><th>#</th><th>Päiväys<br />Erän tallentaja</th><th>Digitointierä</th><th>Finna</th>";
 if (BY_DIGITOINTIERA == true) {
@@ -85,7 +95,7 @@ if (BY_DIGITOINTIERA == true) {
 $message .= "</tr></thead>\n";
 $message .= "    <tbody>\n";
 $olds = strtotime(OLD_COLLECTIONS);
-foreach ($tmp as $row) {
+foreach ($digitointierat as $row) {
     $class = null;
     $lisays = "";
     $open_page = "onclick='openCollection(" . $row->lista_id . ")' ";

@@ -8,7 +8,7 @@ $id = checkNumber($_GET["id"]);
 $rivi_id = checkNumber($_GET["rivi_id"]);
 if ($id >= 0) {
     $data = array("getOneJobForLogs" => 1, "lista_id" => $id, "rivi_id" => $rivi_id);
-    $tmp = callRest("POST", WEBROOT . "/rest/getJobs.php", $data, true);
+    $tmp = callRest("POST", "/rest/getJobs.php", $data, true);
 }
 if (isset($_GET["uudelleen_kasittelyyn"])) {
     $row_id = checkNumber($_GET["row_id"]);
@@ -16,7 +16,7 @@ if (isset($_GET["uudelleen_kasittelyyn"])) {
     $status = checkNumber($_GET["status"]);
     $retry = 1;
     $data1 = array("row_id" => $row_id, "phase" => $phase, "status" => $status, "error" => 0, "retry" => $retry);
-    $ok = callRest("POST", WEBROOT . "/rest/changeProsessingStatus.php", $data1, true);
+    $ok = callRest("POST", "/rest/changeProsessingStatus.php", $data1, true);
     if ($ok == 1) { //Cannot make sweet popup front of the javascript window...
 //        $_SESSION["tallennus_ok"] = "Erä laitettu uudelleenkäsittelyyn";
     } else {
@@ -65,6 +65,6 @@ echo makeCard(12, text("handling"), $msg, false);
 
 echo "<div class='row'>\n";
 echo $message;
-
+$job = new Job($row->tyo_id, $row->listan_rivi_id, $row->kokoelmatunnus);
 echo "</div>";
 echo "</div>";

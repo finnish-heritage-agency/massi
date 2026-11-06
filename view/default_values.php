@@ -7,7 +7,7 @@ if (isset($_GET["more"])) {
         if (file_exists(SOFTWARE_BREAK)) {
             $_SESSION["tallennusvirhe"] = "Taukotiedostoa ei saatu poistettua.";
         } else {
-            $ok = callRest("POST", WEBROOT . "/rest/checkMplusAttempts.php", array("reset" => 1), true);
+            $ok = callRest("POST", "/rest/checkMplusAttempts.php", array("reset" => 1), true);
             $_SESSION["tallennus_ok"] = "Sovelluksen tauko on päättynyt.<br />Uudelleen lähetetään listoja $ok kpl.";
         }
     } elseif ($_GET["more"] == "start_break") {
@@ -38,7 +38,10 @@ $message .= makeTableRow("Lokien hakemisto", LOGS, "Sovelluksen lokien sijainti"
 $message .= makeTableRow("Lokien ja onnistuneesti siirrettyjen aineistojen säilyvyys", SAVE_LOGS . " päivää", "Kuinka kauan sovelluksen lokeja säilytetään. Ja kuinka vanhat onnistuneet kuvat siirretään poistuvat hakemistoon.");
 $message .= makeTableRow("Kuvien hakemisto", PICTURE_FOLDER, "Hakemisto, jota sovellus tarkkailee");
 $message .= makeTableRow("Tiedostotyypit (TYPES)", nl2br(print_r(TYPES, true)));
-$message .= makeTableRow("Finnaan vietävät tiedostomuodot", ".tif, .jpeg", "Kaikkia digitointierässä olevia tiedostomuotoja (esim. .dng) ei viedä Finnaan");
+$message .= makeTableRow("Käsiteltävät läpi menevät formaatit", nl2br(print_r(EXCLUDE_EXTENSION, true)), "Menevät sovelluksen läpi, mutta ei laiteta finna täppää näille.");
+//Jos halutaan viedä finnaan, niin muista päivittää tieto myös SendCollection.php riveille n.370 ja n.504
+
+$message .= makeTableRow("Finnaan vietävät tiedostomuodot", ".tif, .jpeg, .pdf", "Kaikkia digitointierässä olevia tiedostomuotoja (esim. .dng) ei viedä Finnaan");
 $message .= makeTableRow("M+ järjestelmä", M_URL, "Mihin osoitteeseen otetaan M+ yhteys");
 $message .= makeTableRow("M+ järjestelmä", M_USERNAME, "M+ käyttäjätunnus");
 $message .= makeTableRow("M+ järjestelmä", CACHE_LIFETIME . " sec", "Session voimassaoloaika");

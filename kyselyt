@@ -1,0 +1,24 @@
+SELECT kokoelmatunnus, count(*) AS total FROM listan_rivit GROUP BY kokoelmatunnus HAVING count(*) > 1;
+
+
+SELECT T.*, LR.kokoelmatunnus, LR.objektin_id FROM tyot T LEFT JOIN listan_rivit LR ON LR.rivi_id = T.listan_rivi_id WHERE T.tarkistus = 2 AND T.rivi_valmis = 0 $AND T.metatiedot >= 0 AND T.lahetys >= 0 LIMIT 10
+
+
+
+SELECT LR.valmis, LR.objektin_id, LR.rivi_id, T.aloitettu, T.tarkistus FROM listan_rivit LR 
+LEFT JOIN tyot T (SELECT MAX(rivi_id) AS maxid FROM listan_rivit GROUP BY kokoelmatunnus) AS T1
+ON T1.rivi_id = T.listan_rivi_id 
+LEFT JOIN 
+WHERE LR.kokoelmatunnus = :lista LIMIT 1
+
+
+
+
+
+SELECT LR.valmis, LR.objektin_id, LR.rivi_id, T.aloitettu, T.tarkistus
+FROM tyot as T
+LEFT JOIN (SELECT *, MAX(rivi_id) AS maxid
+           FROM listan_rivit
+           GROUP BY kokoelmatunnus) AS LR
+ON T.listan_rivi_id = LR.maxid
+WHERE LR.kokoelmatunnus = "VKK996:770" LIMIT 1
