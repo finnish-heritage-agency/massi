@@ -1,0 +1,135 @@
+FROM php:8.3.36-apache
+
+# System packages
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    ca-certificates \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libzip-dev \
+    libgettextpo-dev \
+    zip \
+    libimage-exiftool-perl \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /usr/bin/exiftool /usr/local/bin/exiftool
+
+ # Locales
+RUN apt-get update && apt-get install -y \
+    locales \
+ && sed -i 's/^# *fi_FI.UTF-8 UTF-8/fi_FI.UTF-8 UTF-8/' /etc/locale.gen \
+ && locale-gen fi_FI.UTF-8 \
+ && update-locale LANG=fi_FI.UTF-8
+
+# Configure GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
+# PHP extensions
+RUN docker-php-ext-install \
+    gd \
+    intl \
+    pdo_mysql \
+    zip \
+    gettext \
+    exif
+
+# Temporary directories
+RUN mkdir -p /var/www/tmp && \
+    chmod 777 /var/www/tmp
+
+# Timezone
+ENV TZ=Europe/Helsinki
+RUN ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime && \
+    echo Europe/Helsinki > /etc/timezone
+
+# Locale
+ENV LANG=fi_FI.UTF-8
+ENV LANGUAGE=fi_FI:fi
+ENV LC_ALL=fi_FI.UTF-8
+
+# Valtion Root CA
+COPY Valtion_Root_CA.cer /usr/local/share/ca-certificates/Valtion_Root_CA.crt
+
+RUN update-ca-certificates
+
+# Apache modules
+RUN a2enmod rewrite
+
+# Apache configuration
+RUN echo "HostnameLookups Off" >> /etc/apache2/apache2.conf && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Startup script
+RUN cat > /usr/local/bin/docker-entrypoint-massi.sh <<'EOF'
+#!/bin/sh
+
+set -e
+
+# MuseumPlus session/cache directory
+mkdir -p /var/www/tmp
+chmod 777 /var/www/tmp
+
+# Odota että CIFS-jako on saatavilla
+echo "Waiting for /kuvat mount..."
+
+COUNTER=0
+MAX_WAIT=300
+
+while [ ! -d /kuvat ]
+do
+    echo "/kuvat not available yet"
+    sleep 5
+    COUNTER=$((COUNTER + 5))
+
+    if [ "$COUNTER" -ge "$MAX_WAIT" ]; then
+        echo "ERROR: /kuvat not available after ${MAX_WAIT}s"
+        exit 1
+    fi
+done
+
+# Varmista että mountti sisältää muutakin kuin tyhjän hakemiston
+while [ "$(find /kuvat -mindepth 1 2>/dev/null | head -1 | wc -l)" -eq 0 ]
+do
+    echo "/kuvat exists but appears empty, waiting..."
+    sleep 5
+    COUNTER=$((COUNTER + 5))
+
+    if [ "$COUNTER" -ge "$MAX_WAIT" ]; then
+        echo "ERROR: /kuvat appears empty after ${MAX_WAIT}s"
+        exit 1
+    fi
+done
+
+echo "/kuvat available"
+
+# mPDF temp directory permissions
+if [ -d /var/www/html/vendor/mpdf/mpdf/tmp ]; then
+    mkdir -p /var/www/html/vendor/mpdf/mpdf/tmp/mpdf
+    chown -R www-data:www-data /var/www/html/vendor/mpdf/mpdf/tmp
+    chmod -R 775 /var/www/html/vendor/mpdf/mpdf/tmp
+fi
+
+# Application file permissions
+find /var/www/html -type d -exec chmod 755 {} \;
+find /var/www/html -name "*.php" -exec chmod 644 {} \;
+find /var/www/html -name "*.pdf" -exec chmod 644 {} \;
+
+# PHP timezone
+echo "date.timezone=Europe/Helsinki" > /usr/local/etc/php/conf.d/timezone.ini
+
+# PHP memory limit
+echo "memory_limit=1024M" > /usr/local/etc/php/conf.d/memory.ini
+
+exec apache2-foreground
+EOF
+
+RUN chmod +x /usr/local/bin/docker-entrypoint-massi.sh
+
+CMD ["/usr/local/bin/docker-entrypoint-massi.sh"]
