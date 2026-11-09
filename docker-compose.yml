@@ -27,7 +27,7 @@ services:
     environment:
       # Keep in sync with DB_* in .env / .env.example
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-adminer}
-      MYSQL_DATABASE: ${DB_NAME:-digitointi}
+      MYSQL_DATABASE: ${DB_NAME:-massi}
     ports:
       - "127.0.0.1:3306:3306"
     volumes:
