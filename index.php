@@ -63,17 +63,33 @@ $pages = array(//if The site doesn not found here, 404 will show
     //    'testi' => $folder . "testi.php",
 );
 //sidebar links (not dropdowns)
+/*
+ * 10.11.2026
+ * Monikielisyys poistettu käytöstä.
+ * Sivupalkin tekstit kovakoodattu suomeksi, koska gettext-käännökset
+ * eivät päivity luotettavasti tuotantoympäristössä.
+ */
+// $links = array(
+//     array("name" => text("technical settings"), "url" => "oletusarvot", "ico" => "fa-cogs"),
+//     //    array("name" => text("pending"), "url" => "kasittelyssa", "ico" => "fa-file-pdf"),
+//     array("name" => text("technical logs"), "url" => "lokit", "ico" => "fa-flag"),
+//     //    array("name" => text("settings"), "url" => "asetukset", "ico" => "fa-cogs"),
+// //    array("name" => text("all transfers"), "url" => "siirrot/refresh", "ico" => "fa-exchange-alt"),
+// );
+
+// $collection = array(
+//     array("name" => text("new") . " " . text("digitization batch", 3), "url" => "uusiEra", "ico" => "fa-archive"),
+//     array("name" => text("digitization batchs"), "url" => "erat", "ico" => "fa-archive"),
+// );
+
 $links = array(
-    array("name" => text("technical settings"), "url" => "oletusarvot", "ico" => "fa-cogs"),
-    //    array("name" => text("pending"), "url" => "kasittelyssa", "ico" => "fa-file-pdf"),
-    array("name" => text("technical logs"), "url" => "lokit", "ico" => "fa-flag"),
-    //    array("name" => text("settings"), "url" => "asetukset", "ico" => "fa-cogs"),
-//    array("name" => text("all transfers"), "url" => "siirrot/refresh", "ico" => "fa-exchange-alt"),
+    array("name" => "Tekniset asetukset", "url" => "oletusarvot", "ico" => "fa-cogs"),
+    array("name" => "Tekniset lokit", "url" => "lokit", "ico" => "fa-flag")
 );
 
 $collection = array(
-    array("name" => text("new") . " " . text("digitization batch", 3), "url" => "uusiEra", "ico" => "fa-archive"),
-    array("name" => text("digitization batchs"), "url" => "erat", "ico" => "fa-archive"),
+    array("name" => "Uusi digitointierä", "url" => "uusiEra", "ico" => "fa-archive"),
+    array("name" => "Digitointierät", "url" => "erat", "ico" => "fa-archive")
 );
 
 //Muista viedä samat myös valid funktioon
