@@ -271,6 +271,11 @@ function checkMPlusStatus() {
         return "M+ tuotannon uudelleenkäynnistys";
     }
     $tmp = callRest("POST", "/rest/checkMplusOnline.php", array("checkMPlus" => 1), true);
+    file_put_contents(
+        "/tmp/checkmplus.debug",
+        "TMP=" . var_export($tmp, true) . PHP_EOL,
+        FILE_APPEND
+    );
     if ($tmp != "OK") {
         sleep(600); //Rajapinta alhaalla, odotetaan 10 minuuttia
         return "M+ yhteysongelma: $tmp";
