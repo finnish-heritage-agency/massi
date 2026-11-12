@@ -107,7 +107,7 @@ class JobStatus {
      */
     public function getCurrentJobs() {
         if ($this->getPhase() == "tarkistus") {
-            $lisays = " AND T.metatiedot >= 0";
+            $lisays = " AND T.metatiedot >= 0 AND T.lahetys <> 2";
         } elseif ($this->getPhase() == "lahetys") {
             $lisays = " AND T.metatiedot = 2 AND T.lahetys = 2";
         } else {
