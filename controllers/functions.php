@@ -118,13 +118,23 @@ function callRest($method, $url, $data, $decode = false, $retry = false) {
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     // EXECUTE:
     $result = curl_exec($curl);
-    if (!$result && $result != 0) {
-        echo("Connection Failure: $url | METHOD: $method. Sleeping... 10 sec");
-        if ($result == false) {
-            print_r($data, true);
-            sleep(30);
-            $result = callRest($method, $url, $data, $decode, true);
-        }
+
+    if ($result === false) {
+
+        $errno = curl_errno($curl);
+        $error = curl_error($curl);
+
+        error_log(
+            "callRest failed: URL=$url METHOD=$method CURL_ERRNO=$errno CURL_ERROR=$error"
+        );
+
+        echo(
+            "Connection Failure: $url | METHOD: $method | CURL_ERRNO=$errno | CURL_ERROR=$error"
+        );
+
+        sleep(30);
+
+        $result = callRest($method, $url, $data, $decode, true);
     }
     curl_close($curl);
     if ($decode == true) {
