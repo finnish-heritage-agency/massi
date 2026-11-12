@@ -20,7 +20,11 @@ function writeToLog($str) {
     }
     $lokifile = ROOT . "logs/" . $lokifile;
 
-    $file_open = fopen($lokifile, "a+");
+    if (!file_exists($lokifile)) {
+        @touch($lokifile);
+    }
+    @chmod($lokifile, 0666);
+    $file_open = @fopen($lokifile, "a+");
     if ($file_open) {
         fwrite($file_open, "$time. $str \n");
         fclose($file_open);
