@@ -118,7 +118,13 @@ function callRest($method, $url, $data, $decode = false, $retry = false) {
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     // EXECUTE:
     $result = curl_exec($curl);
-
+    if (strpos($url, 'checkMplusOnline.php') !== false) {
+        file_put_contents(
+            '/tmp/callrest.debug',
+            "URL=$url\nRESULT=\n$result\n\n",
+            FILE_APPEND
+        );
+    }
     if ($result === false) {
 
         $errno = curl_errno($curl);
