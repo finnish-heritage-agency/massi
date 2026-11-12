@@ -65,6 +65,14 @@ if (count($folders) > 0) {
             }
             $data = array("isCollectionReady" => $object_name);
             $tmp = callRest("POST", "/rest/collections.php", $data, true); //Is collection folder ready...
+            file_put_contents(
+                "/tmp/readCompleteFolders.debug",
+                date("Y-m-d H:i:s") .
+                " object=$object_name response=" .
+                json_encode($tmp) .
+                PHP_EOL,
+                FILE_APPEND
+            );
             /*
               if (!isset($tmp->valmis)) { //objektinimessä onkin piste.. huoh
               $object_name = str_lreplace("_", ".", $folder);
@@ -84,6 +92,14 @@ if (count($folders) > 0) {
                     timerStart();
                     $message .= "Käsitellään aineisto $object_name --> ";
                     $object_id = callRest("POST", "/rest/getObjectId.php", array("search" => $object_name, "re_tries" => RE_TRIES), true);
+                    file_put_contents(
+                        "/tmp/readCompleteFolders.debug",
+                        date("Y-m-d H:i:s") .
+                        " OBJECTID object=$object_name object_id=" .
+                        json_encode($object_id) .
+                        PHP_EOL,
+                        FILE_APPEND
+                    );
                     if ($object_id != "" && is_numeric($object_id)) { //Let´s save also object id
                         $data2 = array(
                             "saveCollectionId" => 1,

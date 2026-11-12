@@ -163,6 +163,7 @@ class Auth {
 
             $this->setLoginStatus($status);
         }
+        $this->setLoginStatus($status);
         return $status;
     }
 }
