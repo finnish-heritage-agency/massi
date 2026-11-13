@@ -34,12 +34,12 @@ if (!is_numeric(SAVE_LOGS)) {
 if (isset($argv[1]) && $argv[1] == "trash") {
     $pictures = TRASH_FOLDER;
     $remove = true;
-    $time = time() - 3600 * $save;
+    $time = time() - 86400 * $save;
 } else {
     $pictures = PICTURE_FOLDER;
     $remove = false;
 //    $time = 1640995200; //Vuoden 2022 alusta. Oli kertasiivous
-    $time = time() - 3600 * $save;
+    $time = time() - 86400 * $save;
 }
 
 
