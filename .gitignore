@@ -25,6 +25,9 @@ vendor/
 # Zip files
 *.zip
 
+# User manual and other documentation
+docs/
+
 # crt files
 *.crt
 
